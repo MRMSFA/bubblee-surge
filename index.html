@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Favicon / App Icons -->
+<link rel="icon" type="image/jpeg" href="./icon.jpeg?v=2">
+<link rel="apple-touch-icon" href="./icon-192.png?v=2">
+<link rel="manifest" href="./manifest.json?v=2">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#030208">
+<title>Bubble Surge</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap');
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+    --bg-dark: #030208;
+    --text: #ffffff;
+    --muted: #94a3b8;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+body {
+    background: #010104;
+    color: var(--text);
+    font-family: 'Outfit', system-ui, sans-serif;
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+button:focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 3px;
+}
+
+#app {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    height: 100dvh;
+    max-height: 920px;
+    overflow: hidden;
+    isolation: isolate;
+    background: radial-gradient(circle at 50% 15%, #1e1b4b 0%, #080619 55%, #030208 100%);
+    box-shadow: 0 0 100px rgba(168, 85, 247, 0.4), 0 0 150px rgba(0,0,0,0.95);
+}
+
+#gameCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    touch-action: none;
+}
+
+.ambient {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.ambient::before,
+.ambient::after {
+    content: "";
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: .45;
+    background: #a855f7;
+    animation: drift 14s ease-in-out infinite alternate;
+}
+
+.ambient::after {
+    bottom: -100px;
+    right: -100px;
+    background: #38bdf8;
+    animation-delay: -6s;
+}
+
+@keyframes drift {
+    to { transform: translate(60px, 70px) scale(1.4); }
+}
+
+.screen {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 24px 20px;
+    background: linear-gradient(180deg, rgba(3,2,8,0.7), rgba(3,2,8,0.95));
+    backdrop-filter: blur(24px);
+    animation: screenIn .25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.screen.active { display: flex; }
+
+@keyframes screenIn {
+    from { opacity: 0; transform: scale(.95) translateY(12px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ULTRA-PROFESSIONAL AAA GAME HOME MENU DASHBOARD */
+.game-hud-home {
+    width: 100%;
+    max-width: 380px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 10px 0;
+}
+
+.brand-showcase {
+    background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 26px;
+    padding: 22px 18px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+}
+
+.brand-showcase::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: var(--primary-gradient);
+}
+
+.game-title {
+    font-size: clamp(40px, 12vw, 52px);
+    line-height: .9;
+    font-weight: 900;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, #ffffff 10%, #38bdf8 35%, #c084fc 70%, #ec4899 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 10px 30px rgba(192,132,252,0.6));
+    margin-top: 8px;
+}
+
+.game-subtitle {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 4px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-top: 6px;
+}
+
+.player-wallet-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.currency-badge {
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 900;
+    color: #fde68a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: inset 0 2px 6px rgba(245,158,11,0.2);
+}
+
+/* EPIC CAMPAIGN PLAY CTA BUTTON */
+.btn-campaign-main {
+    width: 100%;
+    min-height: 66px;
+    background: var(--primary-gradient);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    box-shadow: 0 15px 40px rgba(168, 85, 247, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    position: relative;
+    overflow: hidden;
+    transition: transform .15s cubic-bezier(0.3, 1.5, 0.5, 1), filter .15s;
+}
+
+.btn-campaign-main:active { transform: scale(.96); filter: brightness(1.2); }
+
+.campaign-text-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.campaign-title-text { font-size: 17px; font-weight: 900; color: #fff; letter-spacing: .5px; }
+.campaign-desc-text { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.85); margin-top: 2px; }
+
+.campaign-icon-box {
+    width: 42px; height: 42px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.2);
+    display: grid; place-items: center;
+    font-size: 18px;
+    box-shadow: inset 0 2px 6px rgba(255,255,255,0.4);
+}
+
+/* GAME MODES ROW */
+.modes-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+}
+
+.mode-card-tile {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 18px;
+    padding: 14px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: transform .15s, background .15s, border-color .15s;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+}
+
+.mode-card-tile:active { transform: scale(0.94); background: rgba(255,255,255,0.08); border-color: rgba(56,189,248,0.4); }
+.mode-card-tile span { font-size: 22px; }
+.mode-card-tile label { font-size: 10px; font-weight: 800; color: #e2e8f0; letter-spacing: .5px; }
+
+/* UTILITY MENU GRID (5 ITEMS INCLUDING SETTINGS) */
+.utility-grid-5 {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+}
+
+.utility-card-tile {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 10px 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: transform .15s, background .15s;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+}
+
+.utility-card-tile:active { transform: scale(0.94); background: rgba(255,255,255,0.1); }
+.utility-card-tile span { font-size: 18px; }
+.utility-card-tile label { font-size: 8px; font-weight: 800; color: #cbd5e1; }
+
+/* SETTINGS CONTROLS */
+.settings-group {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.setting-row input[type="range"] {
+    width: 140px;
+    accent-color: #a855f7;
+    cursor: pointer;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255,255,255,0.15);
+    transition: .2s;
+    border-radius: 34px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .2s;
+    border-radius: 50%;
+}
+
+input:checked + .slider { background: var(--primary-gradient); }
+input:checked + .slider:before { transform: translateX(22px); }
+
+/* GENERAL BUTTON STYLES FOR OTHER SCREENS */
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    transition: transform .12s cubic-bezier(0.3, 1.5, 0.5, 1), filter .12s, box-shadow .12s;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+.button:active { transform: scale(.96); filter: brightness(1.2); }
+.primary { background: var(--primary-gradient); font-size: 14px; }
+.secondary { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); }
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.back {
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 800;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+.wallet {
+    border: 1px solid rgba(251,191,36,0.3);
+    background: rgba(245,158,11,0.1);
+    color: #fde68a;
+    padding: 9px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.heading {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -.5px;
+}
+
+.subheading {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+    margin-top: 6px;
+    margin-bottom: 18px;
+}
+
+.level-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0,1fr));
+    gap: 10px;
+    padding-bottom: 24px;
+}
+
+.level {
+    aspect-ratio: 1;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 900;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+.level.unlocked {
+    background: linear-gradient(135deg, #3730a3, #7c3aed);
+    border-color: rgba(167,139,250,0.6);
+    box-shadow: 0 4px 15px rgba(124,58,237,0.3);
+}
+
+.level.completed {
+    background: linear-gradient(135deg, #065f46, #059669);
+    border-color: #34d399;
+}
+
+.level:disabled { opacity: .25; cursor: not-allowed; }
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 12px;
+    padding-bottom: 24px;
+}
+
+.shop-card {
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+    border-radius: 18px;
+    padding: 12px;
+}
+
+.preview {
+    width: 100%;
+    aspect-ratio: 1.4;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+.shop-name { font-size: 12px; font-weight: 800; margin-bottom: 4px; }
+.shop-desc { color: var(--muted); font-size: 10px; margin-bottom: 12px; }
+
+.shop-buy {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+
+.shop-buy.owned { background: #064e3b; border: 1px solid rgba(16,185,129,0.5); }
+.shop-buy:disabled { opacity: .4; cursor: not-allowed; }
+
+.section-label {
+    color: #38bdf8;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin: 14px 0 10px;
+    text-transform: uppercase;
+}
+
+#hud {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+}
+
+#hud > * { pointer-events: auto; }
+
+.hud-top {
+    position: absolute;
+    top: max(14px, env(safe-area-inset-top));
+    left: 14px;
+    right: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.hud-card {
+    background: rgba(10, 13, 36, 0.88);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 8px 12px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.hud-label {
+    color: #94a3b8;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.hud-number { font-size: 16px; font-weight: 900; color: #38bdf8; margin-top: 2px; }
+
+.hud-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    font-size: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.fever-bar-wrap {
+    position: absolute;
+    top: 74px;
+    left: 14px;
+    right: 14px;
+    height: 7px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+.fever-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #f59e0b, #ef4444, #ec4899);
+    border-radius: inherit;
+    transition: width 0.1s linear;
+}
+
+.combo-banner {
+    position: absolute;
+    top: 22%;
+    left: 50%;
+    transform: translateX(-50%) scale(.6);
+    font-size: 26px;
+    font-weight: 900;
+    font-style: italic;
+    white-space: nowrap;
+    color: #fde68a;
+    text-shadow: 0 0 25px #f59e0b, 0 4px 6px #000;
+    opacity: 0;
+    transition: opacity .12s, transform .15s;
+    pointer-events: none;
+}
+
+.combo-banner.show { opacity: 1; transform: translateX(-50%) scale(1); }
+
+#hud-bottom {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: max(18px, env(safe-area-inset-bottom));
+    width: calc(100% - 28px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.objective {
+    background: rgba(10, 13, 36, 0.9);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 8px 14px;
+    font-size: 10px;
+    font-weight: 800;
+    color: #e2e8f0;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.boosters {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(10, 13, 36, 0.92);
+    backdrop-filter: blur(16px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.booster {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    position: relative;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    font-size: 22px;
+    transition: transform .1s;
+}
+
+.booster:active { transform: scale(0.92); }
+
+.booster-count {
+    position: absolute;
+    right: -5px;
+    top: -5px;
+    border-radius: 15px;
+    min-width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    padding: 0 4px;
+    background: #ef4444;
+    color: white;
+    font-size: 9px;
+    font-weight: 900;
+    box-shadow: 0 2px 8px rgba(239,68,68,0.5);
+}
+
+.overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(2, 3, 10, 0.85);
+    backdrop-filter: blur(14px);
+}
+
+.overlay.active { display: flex; animation: screenIn .2s ease; }
+
+.dialog {
+    width: 100%;
+    max-width: 340px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: linear-gradient(145deg, #16193b, #090b1f);
+    padding: 28px 22px;
+    text-align: center;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.85);
+}
+
+.dialog-icon { font-size: 46px; margin-bottom: 12px; }
+.dialog h2 { font-size: 22px; font-weight: 900; }
+.dialog p { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 10px 0 20px; }
+.dialog-actions { display: grid; gap: 10px; }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    padding: 18px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    text-align: center;
+}
+
+.stat-value { font-size: 24px; font-weight: 900; color: #38bdf8; }
+.stat-label { margin-top: 6px; font-size: 9px; color: var(--muted); font-weight: 800; letter-spacing: 1px; }
+
+.toast {
+    position: absolute;
+    z-index: 50;
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%, 15px);
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(18, 22, 54, 0.95);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 14px;
+    padding: 12px 18px;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.6);
+    transition: .18s;
+}
+
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+.mission {
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+    border-radius: 16px;
+    margin-bottom: 12px;
+}
+
+.mission-row { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; font-weight: 800; }
+.mission-sub { color: var(--muted); font-size: 10px; margin-top: 5px; }
+.progress { height: 6px; background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; margin-top: 12px; }
+.progress > div { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #818cf8); border-radius: inherit; }
+</style>
+</head>
+
+<body>
+<div id="app">
+    <div class="ambient"></div>
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- MAIN MENU DASHBOARD -->
+    <section id="screen-main" class="screen active">
+        <div class="game-hud-home">
+            <div class="brand-showcase">
+                <div style="font-size:9px;font-weight:900;letter-spacing:3px;color:#38bdf8;text-transform:uppercase;">✦ ARCADE EVOLUTION ✦</div>
+                <h1 class="game-title">BUBBLE<br>SURGE</h1>
+                <p class="game-subtitle">COSMIC EDITION</p>
+                <div class="player-wallet-row">
+                    <div class="currency-badge">🪙 <span id="menuCoins">300</span></div>
+                </div>
+            </div>
+
+            <!-- Campaign Play CTA -->
+            <button class="btn-campaign-main" onclick="openCampaign()">
+                <div class="campaign-text-group">
+                    <span class="campaign-title-text">CAMPAIGN MODE</span>
+                    <span class="campaign-desc-text">Progress through levels</span>
+                </div>
+                <div class="campaign-icon-box">🗺️</div>
+            </button>
+
+            <!-- Game Modes Grid -->
+            <div class="modes-grid-3">
+                <button class="mode-card-tile" onclick="startArcade()">
+                    <span>♾️</span>
+                    <label>Endless</label>
+                </button>
+                <button class="mode-card-tile" onclick="startBlitz()">
+                    <span>⚡</span>
+                    <label>60s Blitz</label>
+                </button>
+                <button class="mode-card-tile" onclick="startZen()">
+                    <span>🧘</span>
+                    <label>Zen Mode</label>
+                </button>
+            </div>
+
+            <!-- Utility Hub Grid (5 Items with Settings) -->
+            <div class="utility-grid-5">
+                <button class="utility-card-tile" onclick="openShop()">
+                    <span>🛍️</span>
+                    <label>Shop</label>
+                </button>
+                <button class="utility-card-tile" onclick="claimDaily()">
+                    <span>🎁</span>
+                    <label>Reward</label>
+                </button>
+                <button class="utility-card-tile" onclick="openMissions()">
+                    <span>🎯</span>
+                    <label>Missions</label>
+                </button>
+                <button class="utility-card-tile" onclick="openStats()">
+                    <span>🏆</span>
+                    <label>Career</label>
+                </button>
+                <button class="utility-card-tile" onclick="openSettings()">
+                    <span>⚙️</span>
+                    <label>Settings</label>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- SETTINGS SCREEN -->
+    <section id="screen-settings" class="screen">
+        <div class="topbar">
+            <button class="back" onclick="showScreen('screen-main')">← MENU</button>
+            <div class="wallet">🪙 <span class="coins">300</span></div>
+        </div>
+        <h2 class="heading">Settings ⚙️</h2>
+        <p class="subheading">Customize your audio and game immersion.</p>
+        
+        <div class="settings-group">
+            <div class="setting-row">
+                <span>Background Music (BGM)</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="bgmToggle" onchange="toggleBGM(this)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <span>Sound Effects (SFX)</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="sfxToggle" onchange="toggleSFX(this)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                <div style="display: flex; justify-content: space-width; width: 100%; justify-content: space-between;">
+                    <span>Master Volume</span>
+                    <span id="volLabel" style="color: #38bdf8;">80%</span>
+                </div>
+                <input type="range" id="volSlider" min="0" max="100" value="80" oninput="updateVolume(this.value)" style="width: 100%;">
+            </div>
+        </div>
+        <button class="button primary" onclick="showScreen('screen-main')">SAVE & BACK</button>
+    </section>
+
+    <!-- LEVEL MAP -->
+    <section id="screen-levels" class="screen">
+        <div class="topbar">
+            <button class="back" onclick="showScreen('screen-main')">← MENU</button>
+            <div class="wallet">🪙 <span class="coins">300</span></div>
+        </div>
+        <h2 class="heading">Campaign Map</h2>
+        <p class="subheading">Clear sectors with dynamic moves and targets.</p>
+        <div id="levelGrid" class="level-grid"></div>
+    </section>
+
+    <!-- SHOP -->
+    <section id="screen-shop" class="screen">
+        <div class="topbar">
+            <button class="back" onclick="showScreen('screen-main')">← MENU</button>
+            <div class="wallet">🪙 <span class="coins">300</span></div>
+        </div>
+        <h2 class="heading">Cosmic Shop ✨</h2>
+        <p class="subheading">Upgrade your universe with earned coins.</p>
+        <div class="section-label">🌌 ARENA WORLDS</div>
+        <div id="backgroundShop" class="shop-grid"></div>
+        <div class="section-label">💎 BUBBLE SKINS</div>
+        <div id="skinShop" class="shop-grid"></div>
+        <div class="section-label">⚡ POWER-UPS</div>
+        <div id="boosterShop" class="shop-grid"></div>
+    </section>
+
+    <!-- MISSIONS -->
+    <section id="screen-missions" class="screen">
+        <div class="topbar">
+            <button class="back" onclick="showScreen('screen-main')">← MENU</button>
+            <div class="wallet">🪙 <span class="coins">300</span></div>
+        </div>
+        <h2 class="heading">Daily Missions 🎯</h2>
+        <p class="subheading">Complete tasks to claim bonus coins.</p>
+        <div id="missionList"></div>
+    </section>
+
+    <!-- STATS -->
+    <section id="screen-stats" class="screen">
+        <div class="topbar">
+            <button class="back" onclick="showScreen('screen-main')">← MENU</button>
+            <div class="wallet">🪙 <span class="coins">300</span></div>
+        </div>
+        <h2 class="heading">Career Statistics 🏆</h2>
+        <p class="subheading">Your ultimate gaming record.</p>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="statBest">0</div>
+                <div class="stat-label">BEST SCORE</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statPops">0</div>
+                <div class="stat-label">BUBBLES POPPED</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statLevels">0</div>
+                <div class="stat-label">LEVELS CLEARED</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statCombo">0×</div>
+                <div class="stat-label">MAX COMBO</div>
+            </div>
+        </div>
+        <button class="button secondary" onclick="showScreen('screen-main')">BACK TO MENU</button>
+    </section>
+
+    <!-- GAME HUD -->
+    <div id="hud">
+        <div class="hud-top">
+            <button class="hud-icon" onclick="pauseGame()" aria-label="Pause">Ⅱ</button>
+            <div class="hud-card">
+                <div class="hud-label" id="modeLabel">ARCADE</div>
+                <div class="hud-number" id="hud-score">0</div>
+            </div>
+            <div class="hud-card" style="text-align:right">
+                <div class="hud-label" id="targetLabel">BEST</div>
+                <div class="hud-number" id="hud-target">0</div>
+            </div>
+        </div>
+
+        <div class="fever-bar-wrap">
+            <div id="feverFill" class="fever-bar-fill"></div>
+        </div>
+
+        <div id="comboBanner" class="combo-banner">SUPER COMBO!</div>
+
+        <div id="hud-bottom">
+            <div class="objective" id="objective">Tap bubbles to pop!</div>
+            <div class="boosters">
+                <button class="booster" onclick="useBooster('bomb')" aria-label="Bomb">
+                    💣 <span class="booster-count" id="countBomb">3</span>
+                </button>
+                <button class="booster" onclick="useBooster('freeze')" aria-label="Freeze">
+                    ❄️ <span class="booster-count" id="countFreeze">3</span>
+                </button>
+                <button class="booster" onclick="useBooster('zap')" aria-label="Zap">
+                    ⚡ <span class="booster-count" id="countZap">3</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIALOG -->
+    <div id="dialogOverlay" class="overlay">
+        <div class="dialog">
+            <div id="dialogIcon" class="dialog-icon">✨</div>
+            <h2 id="dialogTitle">TITLE</h2>
+            <p id="dialogText">Description text goes here.</p>
+            <div id="dialogActions" class="dialog-actions"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+</div>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+const canvas = $("gameCanvas");
+const ctx = canvas.getContext("2d");
+
+const SAVE_KEY = "bubbleSurge_Ultimate_v13";
+
+const backgrounds = [
+    { id:"nebula", name:"Cosmic Nebula", price:0, colors:["#1e1b4b","#09081d","#030208"], accent:"#38bdf8" },
+    { id:"ocean", name:"Aqua Abyss", price:250, colors:["#0369a1","#0c4a6e","#020617"], accent:"#38bdf8" },
+    { id:"sunset", name:"Solar Sunset", price:350, colors:["#c2410c","#7c2d12","#0f0518"], accent:"#fb923c" },
+    { id:"aurora", name:"Aurora Dreams", price:500, colors:["#065f46","#022c22","#030208"], accent:"#34d399" },
+    { id:"candy", name:"Candy Galaxy", price:650, colors:["#86198f","#4a044e","#070312"], accent:"#f472b6" },
+    { id:"gold", name:"Golden Dimension", price:900, colors:["#b45309","#451a03","#030208"], accent:"#fbbf24" }
+];
+
+const skins = [
+    { id:"classic", name:"Prism Neon", price:0, colors:["#00f5ff", "#7000ff", "#ff007f", "#39ff14", "#ffea00"] },
+    { id:"fire", name:"Supernova", price:300, colors:["#ff3b30", "#ff9500", "#ffcc00", "#ff2d55"] },
+    { id:"ice", name:"Frostbite", price:400, colors:["#5ac8fa", "#007aff", "#5856d6", "#4cd964"] },
+    { id:"toxic", name:"Plasma Toxic", price:550, colors:["#34c759", "#32ade6", "#af52de", "#ff2d55"] },
+    { id:"royal", name:"Hyper Gold", price:800, colors:["#ffd700", "#ff9f0a", "#ff453a", "#bf5af2"] }
+];
+
+const boosterItems = [
+    { id:"bomb", name:"Mega Bomb", icon:"💣", price:120, desc:"Blast surrounding bubbles." },
+    { id:"freeze", name:"Time Freeze", icon:"❄️", price:90, desc:"Halt bubble motion." },
+    { id:"zap", name:"Voltage Zap", icon:"⚡", price:100, desc:"Trigger chain lightning." }
+];
+
+function loadSave() {
+    try {
+        const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "{}");
+        return {
+            coins: Number.isFinite(s.coins) ? s.coins : 300,
+            unlocked: s.unlocked || 1,
+            stars: s.stars || {},
+            inventory: Object.assign({bomb:3,freeze:3,zap:3}, s.inventory || {}),
+            ownedBG: s.ownedBG || ["nebula"],
+            ownedSkin: s.ownedSkin || ["classic"],
+            activeBG: s.activeBG || "nebula",
+            activeSkin: s.activeSkin || "classic",
+            best: s.best || 0,
+            totalPops: s.totalPops || 0,
+            totalLevels: s.totalLevels || 0,
+            bestCombo: s.bestCombo || 0,
+            lastDaily: s.lastDaily || "",
+            missionDay: s.missionDay || "",
+            missions: s.missions || {},
+            settings: Object.assign({ bgm: true, sfx: true, volume: 0.8 }, s.settings || {})
+        };
+    } catch {
+        return {
+            coins:300, unlocked:1, stars:{},
+            inventory:{bomb:3,freeze:3,zap:3},
+            ownedBG:["nebula"], ownedSkin:["classic"],
+            activeBG:"nebula", activeSkin:"classic",
+            best:0, totalPops:0, totalLevels:0, bestCombo:0,
+            lastDaily:"", missionDay:"", missions:{},
+            settings: { bgm: true, sfx: true, volume: 0.8 }
+        };
+    }
+}
+
+let save = loadSave();
+function persist() {
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch {}
+}
+
+let W = 0, H = 0, dpr = 1;
+let bubbles = [];
+let particles = [];
+let shockwaves = [];
+let floatingTexts = [];
+
+let running = false;
+let paused = false;
+let gameMode = "arcade";
+let currentLevel = 1;
+let score = 0;
+let movesLeft = 0;
+let targetScore = 0;
+let freezeTime = 0;
+let blitzTime = 60;
+let feverMeter = 0;
+let feverActive = false;
+let feverTimer = 0;
+let combo = 0;
+let lastPopAt = 0;
+let gameEnded = false;
+let animationId = 0;
+let lastFrame = 0;
+let toastTimer = 0;
+let comboTimer = 0;
+
+/* AUDIO & SYNTHESIZER SYSTEM WITH RELAXING BGM */
+let audioCtx = null;
+let bgmOsc1 = null, bgmOsc2 = null, bgmGain = null;
+let bgmInterval = null;
+
+function initAudio() {
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        startAmbientBGM();
+    } catch {}
+}
+
+function startAmbientBGM() {
+    if (bgmInterval || !save.settings.bgm) return;
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        bgmGain = audioCtx.createGain();
+        bgmGain.gain.setValueAtTime(save.settings.volume * 0.04, audioCtx.currentTime);
+        bgmGain.connect(audioCtx.destination);
+
+        const chords = [
+            [220, 329.63, 440], // A minor
+            [174.61, 261.63, 349.23], // F major
+            [130.81, 196, 246.94], // C major
+            [164.81, 246.94, 329.63] // E minor
+        ];
+        let chordIdx = 0;
+
+        bgmInterval = setInterval(() => {
+            if (!save.settings.bgm || document.hidden || !audioCtx) return;
+            const now = audioCtx.currentTime;
+            const notes = chords[chordIdx];
+            chordIdx = (chordIdx + 1) % chords.length;
+
+            notes.forEach(freq => {
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    osc.type = "sine";
+                    osc.frequency.setValueAtTime(freq, now);
+                    g.gain.setValueAtTime(0.001, now);
+                    g.gain.linearRampToValueAtTime(save.settings.volume * 0.025, now + 1.5);
+                    g.gain.exponentialRampToValueAtTime(0.0001, now + 5.5);
+                    osc.connect(g);
+                    g.connect(bgmGain);
+                    osc.start(now);
+                    osc.stop(now + 6);
+                } catch {}
+            });
+        }, 5500);
+    } catch {}
+}
+
+function stopAmbientBGM() {
+    if (bgmInterval) {
+        clearInterval(bgmInterval);
+        bgmInterval = null;
+    }
+    if (bgmGain && audioCtx) {
+        try { bgmGain.gain.setValueAtTime(0, audioCtx.currentTime); } catch {}
+    }
+}
+
+function playTone(freq=440, duration=.1, type="sine", vol=.05, slide=1) {
+    try {
+        if (!audioCtx || !save.settings.sfx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const now = audioCtx.currentTime;
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        osc.frequency.exponentialRampToValueAtTime(Math.max(30, freq * slide), now + duration);
+        gain.gain.setValueAtTime(vol * save.settings.volume, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+    } catch {}
+}
+
+function playPopSound(cLevel) {
+    playTone(320 + Math.min(cLevel, 10) * 60, 0.12, "sine", 0.06, 1.8);
+    if (cLevel >= 3) {
+        setTimeout(() => playTone(650, 0.1, "triangle", 0.04, 1.4), 40);
+    }
+}
+
+/* SPEECH SYNTHESIS FOR COMBO VOICE */
+function speakCombo(text) {
+    if (!save.settings.sfx) return;
+    try {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.3;
+            utterance.pitch = 1.2;
+            utterance.volume = save.settings.volume;
+            window.speechSynthesis.speak(utterance);
+        }
+    } catch {}
+}
+
+/* PAGE VISIBILITY API FOR BACKGROUND APP HANDLING */
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+        stopAmbientBGM();
+    } else {
+        if (save.settings.bgm) startAmbientBGM();
+    }
+});
+
+const random = (min, max) => min + Math.random() * (max - min);
+const randInt = (min, max) => Math.floor(random(min, max));
+
+function resizeCanvas() {
+    const rect = $("app").getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+function applyBackground() {
+    const bg = backgrounds.find(x => x.id === save.activeBG) || backgrounds[0];
+    $("app").style.background = `radial-gradient(circle at 50% 20%, ${bg.colors[0]}, ${bg.colors[1]} 55%, ${bg.colors[2]})`;
+    document.documentElement.style.setProperty("--accent", bg.accent);
+}
+
+function updateWallets() {
+    $("menuCoins").textContent = save.coins;
+    document.querySelectorAll(".coins").forEach(el => el.textContent = save.coins);
+}
+
+function showToast(msg) {
+    const el = $("toast");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 1800);
+}
+
+function showScreen(id) {
+    stopGame();
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    $("hud").style.display = "none";
+    $("dialogOverlay").classList.remove("active");
+    if (id) $(id).classList.add("active");
+    updateWallets();
+}
+
+function openCampaign() { renderLevels(); showScreen("screen-levels"); }
+function openShop() { renderShop(); showScreen("screen-shop"); }
+function openMissions() { renderMissions(); showScreen("screen-missions"); }
+function openSettings() {
+    $("bgmToggle").checked = save.settings.bgm;
+    $("sfxToggle").checked = save.settings.sfx;
+    $("volSlider").value = Math.round(save.settings.volume * 100);
+    $("volLabel").textContent = Math.round(save.settings.volume * 100) + "%";
+    showScreen("screen-settings");
+}
+function openStats() {
+    $("statBest").textContent = save.best;
+    $("statPops").textContent = save.totalPops;
+    $("statLevels").textContent = save.totalLevels;
+    $("statCombo").textContent = save.bestCombo + "×";
+    showScreen("screen-stats");
+}
+
+function toggleBGM(el) {
+    save.settings.bgm = el.checked;
+    persist();
+    if (save.settings.bgm) {
+        initAudio();
+        startAmbientBGM();
+    } else {
+        stopAmbientBGM();
+    }
+}
+
+function toggleSFX(el) {
+    save.settings.sfx = el.checked;
+    persist();
+}
+
+function updateVolume(val) {
+    save.settings.volume = val / 100;
+    $("volLabel").textContent = val + "%";
+    persist();
+    if (bgmGain && audioCtx) {
+        try { bgmGain.gain.setValueAtTime(save.settings.volume * 0.04, audioCtx.currentTime); } catch {}
+    }
+}
+
+/* BUBBLE CLASS */
+class Bubble {
+    constructor(x, y, r, type = null, special = "") {
+        this.x = x;
+        this.y = y;
+        this.r = r;
+        this.vx = random(-1.2, 1.2);
+        this.vy = random(-1.1, 1.1);
+        this.phase = random(0, Math.PI * 2);
+        this.pulse = random(0, Math.PI * 2);
+        this.type = type ?? randInt(0, (skins.find(s => s.id === save.activeSkin) || skins[0]).colors.length);
+        this.dead = false;
+        this.glow = random(18, 30);
+        this.special = special || (Math.random() < 0.07 ? ["bomb", "star"][randInt(0, 2)] : "");
+    }
+
+    update(dt) {
+        const speed = Math.min(dt / 16.67, 2);
+        this.phase += 0.025 * speed;
+        this.pulse += 0.045 * speed;
+
+        if (freezeTime > 0 || paused || !running) return;
+
+        this.x += this.vx * speed;
+        this.y += this.vy * speed + Math.sin(this.phase) * 0.2 * speed;
+
+        const top = 100;
+        const bottom = H - 110;
+
+        if (this.x - this.r < 10) { this.x = this.r + 10; this.vx *= -1; }
+        if (this.x + this.r > W - 10) { this.x = W - this.r - 10; this.vx *= -1; }
+        if (this.y - this.r < top) { this.y = top + this.r; this.vy *= -1; }
+        if (this.y + this.r > bottom) { this.y = bottom - this.r; this.vy *= -1; }
+    }
+
+    draw() {
+        const skinColors = (skins.find(s => s.id === save.activeSkin) || skins[0]).colors;
+        const color = skinColors[this.type % skinColors.length];
+        const r = this.r * (1 + Math.sin(this.pulse) * 0.025);
+
+        ctx.save();
+        ctx.shadowColor = feverActive ? "#f59e0b" : color;
+        ctx.shadowBlur = feverActive ? 35 : this.glow;
+
+        const grad = ctx.createRadialGradient(
+            this.x - r * 0.35, this.y - r * 0.35, r * 0.05,
+            this.x, this.y, r * 1.05
+        );
+        grad.addColorStop(0, "#ffffff");
+        grad.addColorStop(0.2, feverActive ? "#fffbaf" : color);
+        grad.addColorStop(0.7, color);
+        grad.addColorStop(1, "#020106");
+
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = "rgba(255,255,255,0.85)";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.ellipse(this.x - r * 0.3, this.y - r * 0.35, r * 0.25, r * 0.1, -0.6, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.fill();
+
+        if (this.special === "bomb") {
+            ctx.fillStyle = "#fff";
+            ctx.font = `${Math.max(12, r * 0.7)}px sans-serif`;
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText("💣", this.x, this.y);
+        } else if (this.special === "star") {
+            ctx.fillStyle = "#fde68a";
+            ctx.font = `${Math.max(12, r * 0.7)}px sans-serif`;
+            ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText("★", this.x, this.y);
+        }
+
+        ctx.restore();
+    }
+}
+
+function spawnBoard(count = 16) {
+    bubbles = [];
+    particles = [];
+    shockwaves = [];
+    floatingTexts = [];
+
+    let attempts = 0;
+    while (bubbles.length < count && attempts < count * 25) {
+        attempts++;
+        const r = random(18, 26);
+        const x = random(r + 10, W - r - 10);
+        const y = random(115, H - 125);
+        if (!bubbles.some(b => Math.hypot(b.x - x, b.y - y) < b.r + r + 8)) {
+            bubbles.push(new Bubble(x, y, r));
+        }
+    }
+}
+
+function checkWaveReplenishment() {
+    if (bubbles.length <= 2 && running && !gameEnded) {
+        setTimeout(() => {
+            if (!running || gameEnded) return;
+            spawnBoard(gameMode === "campaign" ? levelConfig(currentLevel).bubbleCount : 16);
+            showToast("✨ NEW WAVE SURGE!");
+        }, 200);
+    }
+}
+
+function burst(x, y, color, amount = 22) {
+    for (let i = 0; i < amount; i++) {
+        const angle = random(0, Math.PI * 2);
+        const speed = random(2, 7);
+        particles.push({
+            x, y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            r: random(2, 5),
+            life: 1,
+            color
+        });
+    }
+}
+
+function addShockwave(x, y, color, max = 90) {
+    shockwaves.push({ x, y, r: 5, max, life: 1, color });
+}
+
+function floatingText(x, y, text, color = "#fff") {
+    floatingTexts.push({ x, y, text, color, life: 1 });
+}
+
+function showComboText(n) {
+    const banner = $("comboBanner");
+    const words = ["NICE!", "GREAT COMBO!", "SUPER SURGE!", "MEGA CHAIN!", "UNSTOPPABLE!", "COSMIC FEVER!"];
+    const phrase = n < 2 ? "Pop!" : (words[Math.min(n - 1, words.length - 1)]);
+    banner.textContent = n < 2 ? "POP!" : (phrase + "  ×" + n);
+    banner.classList.add("show");
+    clearTimeout(comboTimer);
+    comboTimer = setTimeout(() => banner.classList.remove("show"), 700);
+
+    if (n >= 2) {
+        speakCombo(phrase);
+    }
+}
+
+/* MISSIONS SYSTEM */
+function currentDayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+
+function ensureMissions() {
+    const day = currentDayStr();
+    if (save.missionDay !== day) {
+        save.missionDay = day;
+        save.missions = {
+            pops: { value: 0, target: 30, reward: 50, claimed: false, label: "Pop 30 bubbles" },
+            score: { value: 0, target: 2000, reward: 75, claimed: false, label: "Earn 2,000 points" },
+            rounds: { value: 0, target: 3, reward: 90, claimed: false, label: "Play 3 matches" }
+        };
+        persist();
+    }
+}
+
+function updateMissionProgress(type, amt) {
+    ensureMissions();
+    const m = save.missions[type];
+    if (m && !m.claimed) {
+        m.value = Math.min(m.target, m.value + amt);
+        persist();
+    }
+}
+
+function recordScore(pts) {
+    const multiplier = feverActive ? 3 : 1;
+    const finalPts = pts * multiplier;
+    score += finalPts;
+    save.best = Math.max(save.best, score);
+    updateMissionProgress("score", finalPts);
+    $("hud-score").textContent = score;
+
+    if (!feverActive) {
+        feverMeter = Math.min(100, feverMeter + finalPts * 0.015);
+        if (feverMeter >= 100) triggerFever();
+    }
+}
+
+function triggerFever() {
+    feverActive = true;
+    feverTimer = 6000;
+    showToast("🔥 FEVER SURGE ACTIVATED (3x Score)!");
+    playTone(880, 0.3, "triangle", 0.08, 1.5);
+    speakCombo("Fever Surge!");
+}
+
+function popBubble(bubble, level = 1) {
+    if (!bubble || bubble.dead || gameEnded || !running) return 0;
+
+    const idx = bubbles.indexOf(bubble);
+    if (idx < 0) return 0;
+    bubble.dead = true;
+    bubbles.splice(idx, 1);
+
+    const skinColors = (skins.find(s => s.id === save.activeSkin) || skins[0]).colors;
+    const color = skinColors[bubble.type % skinColors.length];
+    const points = 25 * level;
+
+    recordScore(points);
+    save.coins += level >= 3 ? 2 : 1;
+    save.totalPops++;
+    save.bestCombo = Math.max(save.bestCombo, level);
+    updateMissionProgress("pops", 1);
+
+    burst(bubble.x, bubble.y, color, level >= 3 ? 32 : 18);
+    addShockwave(bubble.x, bubble.y, color, bubble.r * 2.8);
+    floatingText(bubble.x, bubble.y - 10, "+" + points, level >= 3 ? "#fde68a" : "#fff");
+    playPopSound(level);
+    updateWallets();
+    persist();
+
+    if (level >= 2) showComboText(level);
+
+    let radius = bubble.r * 2.8;
+    if (bubble.special === "bomb") radius *= 1.8;
+
+    const neighbors = bubbles.filter(other => Math.hypot(other.x - bubble.x, other.y - bubble.y) < radius + other.r).slice(0, 8);
+    let extraPops = 0;
+    for (const n of neighbors) {
+        if (!n.dead && bubbles.includes(n)) extraPops += popBubble(n, level + 1);
+    }
+    return 1 + extraPops;
+}
+
+function handleTap(x, y) {
+    if (!running || paused || gameEnded) return;
+    initAudio();
+
+    let target = null;
+    let minDist = Infinity;
+    for (const b of bubbles) {
+        const dist = Math.hypot(b.x - x, b.y - y);
+        if (dist < b.r + 18 && dist < minDist) {
+            target = b;
+            minDist = dist;
+        }
+    }
+    if (!target) return;
+
+    const now = performance.now();
+    combo = now - lastPopAt < 1000 ? combo + 1 : 1;
+    lastPopAt = now;
+
+    popBubble(target, combo);
+
+    if (gameMode === "campaign") {
+        movesLeft--;
+        updateHUD();
+        setTimeout(checkCampaignOutcome, 200);
+    }
+
+    checkWaveReplenishment();
+}
+
+canvas.addEventListener("pointerdown", e => {
+    const rect = canvas.getBoundingClientRect();
+    handleTap(e.clientX - rect.left, e.clientY - rect.top);
+});
+
+/* ANIMATION LOOP */
+function frame(now) {
+    animationId = requestAnimationFrame(frame);
+    const dt = Math.min(40, now - (lastFrame || now));
+    lastFrame = now;
+
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.save();
+    const t = now * 0.0001;
+    for (let i = 0; i < 45; i++) {
+        const sx = ((i * 85.5) % W);
+        const sy = ((i * 143.2 + t * 50) % H);
+        ctx.globalAlpha = 0.15 + 0.22 * Math.sin(t * 3 + i);
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(sx, sy, (i % 3) * 0.5 + 1, (i % 3) * 0.5 + 1);
+    }
+    ctx.restore();
+
+    if (running && !paused) {
+        if (freezeTime > 0) freezeTime = Math.max(0, freezeTime - dt);
+        if (feverActive) {
+            feverTimer -= dt;
+            feverMeter = (feverTimer / 6000) * 100;
+            if (feverTimer <= 0) {
+                feverActive = false;
+                feverMeter = 0;
+            }
+        }
+        if (gameMode === "blitz") {
+            blitzTime -= dt / 1000;
+            $("hud-target").textContent = Math.ceil(blitzTime) + "s";
+            if (blitzTime <= 0) endBlitzGame();
+        }
+        bubbles.forEach(b => b.update(dt));
+    }
+
+    $("feverFill").style.width = feverMeter + "%";
+
+    bubbles.forEach(b => b.draw());
+
+    for (let i = shockwaves.length - 1; i >= 0; i--) {
+        const s = shockwaves[i];
+        s.r += (s.max - s.r) * 0.16;
+        s.life -= 0.045;
+        if (s.life <= 0) { shockwaves.splice(i, 1); continue; }
+        ctx.save();
+        ctx.globalAlpha = s.life;
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = 2.5 * s.life;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2); ctx.stroke();
+        ctx.restore();
+    }
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy;
+        p.vx *= 0.98; p.vy = p.vy * 0.98 + 0.025;
+        p.life -= 0.035;
+        if (p.life <= 0) { particles.splice(i, 1); continue; }
+        ctx.save();
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+    }
+
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+        const f = floatingTexts[i];
+        f.y -= 0.8; f.life -= 0.03;
+        if (f.life <= 0) { floatingTexts.splice(i, 1); continue; }
+        ctx.save();
+        ctx.globalAlpha = f.life;
+        ctx.font = "900 16px 'Outfit', sans-serif";
+        ctx.fillStyle = f.color;
+        ctx.textAlign = "center";
+        ctx.fillText(f.text, f.x, f.y);
+        ctx.restore();
+    }
+
+    if (freezeTime > 0) {
+        ctx.save();
+        ctx.fillStyle = "rgba(56, 189, 248, 0.08)";
+        ctx.fillRect(0, 100, W, H - 200);
+        ctx.restore();
+    }
+}
+animationId = requestAnimationFrame(frame);
+
+/* DYNAMIC LEVEL CONFIGURATION */
+function levelConfig(lvl) {
+    return {
+        target: 300 + lvl * 180,
+        moves: Math.max(8, 24 - Math.floor(lvl / 5)),
+        bubbleCount: Math.min(26, 14 + Math.floor(lvl / 8))
+    };
+}
+
+function stopGame() {
+    running = false;
+    paused = false;
+    gameEnded = true;
+}
+
+function startGame(mode, lvl = 1) {
+    initAudio();
+    gameMode = mode;
+    currentLevel = lvl;
+    score = 0;
+    combo = 0;
+    lastPopAt = 0;
+    freezeTime = 0;
+    feverMeter = 0;
+    feverActive = false;
+    gameEnded = false;
+    paused = false;
+    running = true;
+
+    if (mode === "campaign") {
+        const cfg = levelConfig(lvl);
+        movesLeft = cfg.moves;
+        targetScore = cfg.target;
+    } else if (mode === "blitz") {
+        blitzTime = 60;
+    }
+
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    $("dialogOverlay").classList.remove("active");
+    $("hud").style.display = "block";
+
+    $("modeLabel").textContent = mode === "campaign" ? "LEVEL " + lvl : mode.toUpperCase();
+    $("targetLabel").textContent = mode === "campaign" ? "TARGET" : mode === "blitz" ? "TIME" : "BEST";
+    updateHUD();
+    spawnBoard(mode === "campaign" ? levelConfig(lvl).bubbleCount : 16);
+    updateWallets();
+    updateMissionProgress("rounds", 1);
+}
+
+function startArcade() { startGame("arcade"); }
+function startBlitz() { startGame("blitz"); }
+function startZen() { startGame("zen"); }
+function startCampaignLevel(lvl) {
+    if (lvl > save.unlocked || lvl > 100) return;
+    startGame("campaign", lvl);
+}
+
+function updateHUD() {
+    $("hud-score").textContent = score;
+    if (gameMode === "campaign") {
+        $("hud-target").textContent = targetScore;
+        $("objective").textContent = `TARGET: ${targetScore} PTS  •  MOVES LEFT: ${movesLeft}`;
+    } else if (gameMode === "blitz") {
+        $("hud-target").textContent = Math.ceil(blitzTime) + "s";
+        $("objective").textContent = "POP AS MANY BUBBLES AS YOU CAN!";
+    } else if (gameMode === "zen") {
+        $("hud-target").textContent = save.best;
+        $("objective").textContent = "ZEN MODE • ZERO PRESSURE";
+    } else {
+        $("hud-target").textContent = save.best;
+        $("objective").textContent = `BEST SCORE: ${save.best}  •  COINS: ${save.coins}`;
+    }
+}
+
+function checkCampaignOutcome() {
+    if (!running || gameEnded || gameMode !== "campaign") return;
+
+    if (score >= targetScore) {
+        gameEnded = true;
+        running = false;
+        playTone(523, 0.2, "triangle", 0.08, 1.2);
+        setTimeout(() => playTone(784, 0.3, "triangle", 0.08, 1.2), 150);
+
+        const stars = score >= targetScore * 1.8 ? 3 : score >= targetScore * 1.3 ? 2 : 1;
+        save.stars[currentLevel] = Math.max(save.stars[currentLevel] || 0, stars);
+        save.totalLevels++;
+        if (currentLevel >= save.unlocked && currentLevel < 100) save.unlocked = currentLevel + 1;
+
+        const reward = 50 + currentLevel * 8;
+        save.coins += reward;
+        persist(); updateWallets();
+
+        showDialog("🏆", "SECTOR CLEARED!", `Earned ${stars} star${stars>1?"s":""} & ${reward} coins!`, [
+            { text: currentLevel < 100 ? "NEXT LEVEL →" : "MAP", cls: "primary", fn: () => {
+                if (currentLevel < 100) startCampaignLevel(currentLevel + 1); else openCampaign();
+            }},
+            { text: "RETRY", cls: "secondary", fn: () => startCampaignLevel(currentLevel) },
+            { text: "MENU", cls: "secondary", fn: () => showScreen("screen-main") }
+        ]);
+    } else if (movesLeft <= 0) {
+        gameEnded = true;
+        running = false;
+        showDialog("💫", "OUT OF MOVES", `Score: ${score} / ${targetScore}`, [
+            { text: "TRY AGAIN", cls: "primary", fn: () => startCampaignLevel(currentLevel) },
+            { text: "MAP", cls: "secondary", fn: openCampaign },
+            { text: "MENU", cls: "secondary", fn: () => showScreen("screen-main") }
+        ]);
+    }
+}
+
+function endBlitzGame() {
+    gameEnded = true;
+    running = false;
+    const reward = Math.floor(score / 20);
+    save.coins += reward;
+    persist(); updateWallets();
+    showDialog("⚡", "TIME UP!", `Blitz Score: ${score}\nCoins earned: +${reward}`, [
+        { text: "PLAY AGAIN", cls: "primary", fn: startBlitz },
+        { text: "MENU", cls: "secondary", fn: () => showScreen("screen-main") }
+    ]);
+}
+
+function showDialog(icon, title, text, actions) {
+    $("dialogIcon").textContent = icon;
+    $("dialogTitle").textContent = title;
+    $("dialogText").textContent = text;
+    const area = $("dialogActions");
+    area.replaceChildren();
+    actions.forEach(act => {
+        const btn = document.createElement("button");
+        btn.className = "button " + act.cls;
+        btn.textContent = act.text;
+        btn.addEventListener("click", act.fn);
+        area.appendChild(btn);
+    });
+    $("dialogOverlay").classList.add("active");
+}
+
+function pauseGame() {
+    if (!running || gameEnded) return;
+    paused = true;
+    showDialog("Ⅱ", "PAUSED", "Game paused.", [
+        { text: "RESUME", cls: "primary", fn: () => { $("dialogOverlay").classList.remove("active"); paused = false; }},
+        { text: "RESTART", cls: "secondary", fn: () => startGame(gameMode, currentLevel) },
+        { text: "MENU", cls: "secondary", fn: () => showScreen("screen-main") }
+    ]);
+}
+
+/* BOOSTERS */
+function useBooster(type) {
+    if (!running || paused || gameEnded) return;
+    initAudio();
+    if ((save.inventory[type] || 0) <= 0) {
+        showToast("Out of power-ups! Visit the shop.");
+        return;
+    }
+    save.inventory[type]--;
+
+    if (type === "freeze") {
+        freezeTime = 6000;
+        showToast("❄️ TIME FROZEN!");
+    } else if (type === "bomb") {
+        const target = bubbles[Math.floor(bubbles.length / 2)];
+        if (target) {
+            bubbles.filter(b => Math.hypot(b.x - target.x, b.y - target.y) < 160).forEach(b => popBubble(b, 2));
+            addShockwave(target.x, target.y, "#f472b6", 180);
+            showToast("💣 MEGA BLAST!");
+        }
+    } else if (type === "zap") {
+        bubbles.slice(0, 5).forEach((b, i) => setTimeout(() => {
+            if (running && !gameEnded && bubbles.includes(b)) popBubble(b, 3);
+        }, i * 50));
+        showToast("⚡ VOLTAGE ZAP!");
+    }
+    updateWallets();
+    persist();
+    checkWaveReplenishment();
+}
+
+/* RENDER CAMPAIGN LEVELS */
+function renderLevels() {
+    const grid = $("levelGrid");
+    grid.replaceChildren();
+    for (let i = 1; i <= 100; i++) {
+        const stars = save.stars[i] || 0;
+        const unlocked = i <= save.unlocked;
+        const btn = document.createElement("button");
+        btn.className = "level " + (unlocked ? "unlocked" : "") + (stars ? " completed" : "");
+        btn.disabled = !unlocked;
+        btn.innerHTML = unlocked ? `${i}<span style="font-size:9px;color:#fde68a">${"★".repeat(stars)}</span>` : "🔒";
+        btn.addEventListener("click", () => startCampaignLevel(i));
+        grid.appendChild(btn);
+    }
+}
+
+/* SHOP RENDER */
+function renderShop() {
+    const bgGrid = $("backgroundShop");
+    const skinGrid = $("skinShop");
+    const boosterGrid = $("boosterShop");
+    bgGrid.replaceChildren(); skinGrid.replaceChildren(); boosterGrid.replaceChildren();
+
+    backgrounds.forEach(bg => {
+        const owned = save.ownedBG.includes(bg.id);
+        const equipped = save.activeBG === bg.id;
+        bgGrid.appendChild(makeShopCard({
+            name: bg.name, price: bg.price, desc: owned ? "Owned" : "Unlock arena",
+            preview: `radial-gradient(circle at 30% 20%, ${bg.colors[0]}, ${bg.colors[1]} 60%, ${bg.colors[2]})`,
+            owned, equipped, onBuy: () => {
+                if (!owned) {
+                    if (save.coins < bg.price) return showToast("Not enough coins!");
+                    save.coins -= bg.price; save.ownedBG.push(bg.id);
+                }
+                save.activeBG = bg.id; persist(); applyBackground(); renderShop(); updateWallets();
+                showToast("🌌 Arena equipped!");
+            }
+        }));
+    });
+
+    skins.forEach(skin => {
+        const owned = save.ownedSkin.includes(skin.id);
+        const equipped = save.activeSkin === skin.id;
+        skinGrid.appendChild(makeShopCard({
+            name: skin.name, price: skin.price, desc: owned ? "Owned" : "Bubble style",
+            preview: `radial-gradient(circle at 30% 20%, ${skin.colors[0]}, ${skin.colors[1]} 50%, ${skin.colors[2]})`,
+            owned, equipped, onBuy: () => {
+                if (!owned) {
+                    if (save.coins < skin.price) return showToast("Not enough coins!");
+                    save.coins -= skin.price; save.ownedSkin.push(skin.id);
+                }
+                save.activeSkin = skin.id; persist(); renderShop(); updateWallets();
+                showToast("💎 Bubble skin equipped!");
+            }
+        }));
+    });
+
+    boosterItems.forEach(item => {
+        boosterGrid.appendChild(makeShopCard({
+            name: item.icon + " " + item.name, price: item.price, desc: item.desc,
+            preview: "radial-gradient(circle, #3730a3, #09081d)",
+            owned: false, equipped: false, onBuy: () => {
+                if (save.coins < item.price) return showToast("Not enough coins!");
+                save.coins -= item.price;
+                save.inventory[item.id] = (save.inventory[item.id] || 0) + 1;
+                persist(); updateWallets(); renderShop();
+                showToast(item.icon + " Purchased!");
+            }
+        }));
+    });
+}
+
+function makeShopCard({ name, price, desc, preview, owned, equipped, onBuy }) {
+    const card = document.createElement("div");
+    card.className = "shop-card";
+    const art = document.createElement("div");
+    art.className = "preview"; art.style.background = preview;
+    card.appendChild(art);
+
+    const title = document.createElement("div"); title.className = "shop-name"; title.textContent = name;
+    card.appendChild(title);
+    const description = document.createElement("div"); description.className = "shop-desc"; description.textContent = desc;
+    card.appendChild(description);
+
+    const btn = document.createElement("button");
+    btn.className = "shop-buy" + (owned ? " owned" : "");
+    btn.textContent = equipped ? "✓ EQUIPPED" : owned ? "EQUIP" : `🪙 ${price}`;
+    btn.disabled = equipped;
+    btn.addEventListener("click", onBuy);
+    card.appendChild(btn);
+    return card;
+}
+
+/* DAILY REWARD & MISSIONS */
+function claimDaily() {
+    const today = new Date().toDateString();
+    if (save.lastDaily === today) {
+        showToast("🎁 Already claimed today!");
+        return;
+    }
+    save.lastDaily = today;
+    save.coins += 200;
+    persist(); updateWallets();
+    showToast("🎉 +200 Daily Coins Claimed!");
+}
+
+function renderMissions() {
+    ensureMissions();
+    const list = $("missionList");
+    list.replaceChildren();
+
+    Object.entries(save.missions).forEach(([id, m]) => {
+        const card = document.createElement("div"); card.className = "mission";
+        const row = document.createElement("div"); row.className = "mission-row";
+        const title = document.createElement("span"); title.textContent = m.label;
+        const count = document.createElement("span"); count.style.color = "#38bdf8"; count.textContent = `${m.value}/${m.target}`;
+        row.append(title, count); card.appendChild(row);
+
+        const sub = document.createElement("div"); sub.className = "mission-sub"; sub.textContent = `Reward: ${m.reward} coins`;
+        card.appendChild(sub);
+
+        const bar = document.createElement("div"); bar.className = "progress";
+        const fill = document.createElement("div"); fill.style.width = `${Math.min(100, m.value / m.target * 100)}%`;
+        bar.appendChild(fill); card.appendChild(bar);
+
+        const btn = document.createElement("button"); btn.className = "shop-buy"; btn.style.marginTop = "12px";
+        if (m.claimed) {
+            btn.textContent = "✓ CLAIMED"; btn.disabled = true;
+        } else if (m.value >= m.target) {
+            btn.textContent = `CLAIM ${m.reward} 🪙`;
+            btn.addEventListener("click", () => {
+                m.claimed = true; save.coins += m.reward; persist(); updateWallets(); renderMissions();
+                showToast("🎉 Reward claimed!");
+            });
+        } else {
+            btn.textContent = "IN PROGRESS"; btn.disabled = true;
+        }
+        card.appendChild(btn);
+        list.appendChild(card);
+    });
+}
+
+/* BOOT */
+ensureMissions();
+applyBackground();
+updateWallets();
+renderLevels();
+
+// Auto-start BGM on first user interaction if enabled
+window.addEventListener("pointerdown", () => {
+    if (save.settings.bgm && !bgmInterval) {
+        initAudio();
+    }
+}, { once: true });
+</script>
+</body>
+</html>
