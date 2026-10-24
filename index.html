@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Favicon / App Icons -->
-<link rel="icon" type="image/jpeg" href="./icon.jpeg?v=2">
-<link rel="apple-touch-icon" href="./icon-192.png?v=2">
-<link rel="manifest" href="./manifest.json?v=2">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#030208">
-<title>Bubble Surge</title>
+<title>Bubble Surge | AAA Mobile Arcade</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 y1=%220%22 x2=%221%22 y2=%221%22%3E%3Cstop stop-color=%22%2300f5ff%22/%3E%3Cstop offset=%221%22 stop-color=%22%23a855f7%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2264%22 height=%2264%22 rx=%2216%22 fill=%22%23030208%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2223%22 fill=%22url(%23g)%22/%3E%3Ccircle cx=%2224%22 cy=%2224%22 r=%227%22 fill=%22white%22 fill-opacity=%22.8%22/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="./icon-192.png?v=2">
+<link rel="manifest" href="./manifest.json?v=2">
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap');
 
 :root {
     --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+    --accent-glow: linear-gradient(135deg, #00f5ff, #7000ff);
     --bg-dark: #030208;
     --text: #ffffff;
     --muted: #94a3b8;
@@ -47,11 +48,6 @@ button {
     background: none;
 }
 
-button:focus-visible {
-    outline: 2px solid #38bdf8;
-    outline-offset: 3px;
-}
-
 #app {
     position: relative;
     width: 100%;
@@ -62,6 +58,18 @@ button:focus-visible {
     isolation: isolate;
     background: radial-gradient(circle at 50% 15%, #1e1b4b 0%, #080619 55%, #030208 100%);
     box-shadow: 0 0 100px rgba(168, 85, 247, 0.4), 0 0 150px rgba(0,0,0,0.95);
+    transition: transform 0.05s ease-out;
+}
+
+#app.shake {
+    animation: screenShake 0.25s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes screenShake {
+    10%, 90% { transform: translate3d(-2px, 1px, 0); }
+    20%, 80% { transform: translate3d(3px, -2px, 0); }
+    30%, 50%, 70% { transform: translate3d(-5px, 3px, 0); }
+    40%, 60% { transform: translate3d(5px, -3px, 0); }
 }
 
 #gameCanvas {
@@ -113,7 +121,7 @@ button:focus-visible {
     flex-direction: column;
     overflow-y: auto;
     padding: 24px 20px;
-    background: linear-gradient(180deg, rgba(3,2,8,0.7), rgba(3,2,8,0.95));
+    background: linear-gradient(180deg, rgba(3,2,8,0.75), rgba(3,2,8,0.98));
     backdrop-filter: blur(24px);
     animation: screenIn .25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -125,25 +133,54 @@ button:focus-visible {
     to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-/* ULTRA-PROFESSIONAL AAA GAME HOME MENU DASHBOARD */
+/* TOP-RIGHT SETTINGS BUTTON */
+.top-right-settings-btn {
+    position: absolute;
+    top: max(16px, env(safe-area-inset-top));
+    right: 16px;
+    z-index: 25;
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(16px);
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    transition: transform 0.15s, background 0.15s;
+}
+
+.top-right-settings-btn:active {
+    transform: scale(0.9);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* MAIN MENU HOME DASHBOARD */
+#screen-main {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(99,102,241,.20), transparent 46%),
+      linear-gradient(180deg, rgba(5,7,22,.84), rgba(3,2,8,.98));
+}
 .game-hud-home {
     width: 100%;
     max-width: 380px;
     margin: auto;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 10px 0;
+    gap: 14px;
+    padding: 14px 0;
 }
 
 .brand-showcase {
-    background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 26px;
-    padding: 22px 18px;
+    background: linear-gradient(145deg, rgba(21,25,65,.88), rgba(8,10,29,.9) 62%, rgba(32,12,57,.84));
+    border: 1px solid rgba(165,180,252,.25);
+    border-radius: 30px;
+    padding: 28px 18px 22px;
     text-align: center;
     position: relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+    box-shadow: 0 24px 58px rgba(0,0,0,.56), 0 0 38px rgba(99,102,241,.12), inset 0 1px 0 rgba(255,255,255,.22);
     backdrop-filter: blur(20px);
     overflow: hidden;
 }
@@ -156,7 +193,7 @@ button:focus-visible {
 }
 
 .game-title {
-    font-size: clamp(40px, 12vw, 52px);
+    font-size: clamp(42px, 12vw, 56px);
     line-height: .9;
     font-weight: 900;
     letter-spacing: -2px;
@@ -177,6 +214,16 @@ button:focus-visible {
     margin-top: 6px;
 }
 
+.creator-tag {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #38bdf8;
+    text-transform: uppercase;
+    margin-top: 10px;
+    text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+}
+
 .player-wallet-row {
     display: flex;
     justify-content: center;
@@ -188,31 +235,30 @@ button:focus-visible {
 }
 
 .currency-badge {
-    background: rgba(245, 158, 11, 0.12);
-    border: 1px solid rgba(245, 158, 11, 0.35);
-    padding: 6px 14px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    padding: 6px 16px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 900;
     color: #fde68a;
     display: flex;
     align-items: center;
     gap: 6px;
-    box-shadow: inset 0 2px 6px rgba(245,158,11,0.2);
+    box-shadow: inset 0 2px 6px rgba(245,158,11,0.25);
 }
 
-/* EPIC CAMPAIGN PLAY CTA BUTTON */
 .btn-campaign-main {
     width: 100%;
-    min-height: 66px;
+    min-height: 68px;
     background: var(--primary-gradient);
-    border-radius: 20px;
+    border-radius: 22px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 22px;
-    box-shadow: 0 15px 40px rgba(168, 85, 247, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 14px 34px rgba(124,58,237,.38), inset 0 1px 0 rgba(255,255,255,.28);
+    border: 1px solid rgba(255,255,255,.32);
     position: relative;
     overflow: hidden;
     transition: transform .15s cubic-bezier(0.3, 1.5, 0.5, 1), filter .15s;
@@ -220,25 +266,18 @@ button:focus-visible {
 
 .btn-campaign-main:active { transform: scale(.96); filter: brightness(1.2); }
 
-.campaign-text-group {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-.campaign-title-text { font-size: 17px; font-weight: 900; color: #fff; letter-spacing: .5px; }
+.campaign-title-text { font-size: 18px; font-weight: 900; color: #fff; letter-spacing: .5px; }
 .campaign-desc-text { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.85); margin-top: 2px; }
 
 .campaign-icon-box {
-    width: 42px; height: 42px;
+    width: 44px; height: 44px;
     border-radius: 14px;
     background: rgba(255,255,255,0.2);
     display: grid; place-items: center;
-    font-size: 18px;
+    font-size: 20px;
     box-shadow: inset 0 2px 6px rgba(255,255,255,0.4);
 }
 
-/* GAME MODES ROW */
 .modes-grid-3 {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -247,57 +286,55 @@ button:focus-visible {
 }
 
 .mode-card-tile {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(155deg, rgba(22,27,61,.86), rgba(8,10,27,.92));
+    border: 1px solid rgba(165,180,252,.18);
     border-radius: 18px;
     padding: 14px 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    transition: transform .15s, background .15s, border-color .15s;
+    transition: transform .15s, background .15s;
     box-shadow: 0 8px 22px rgba(0,0,0,0.35);
 }
 
-.mode-card-tile:active { transform: scale(0.94); background: rgba(255,255,255,0.08); border-color: rgba(56,189,248,0.4); }
+.mode-card-tile:active { transform: scale(0.94); background: rgba(255,255,255,0.1); }
 .mode-card-tile span { font-size: 22px; }
-.mode-card-tile label { font-size: 10px; font-weight: 800; color: #e2e8f0; letter-spacing: .5px; }
+.mode-card-tile label { font-size: 10px; font-weight: 800; color: #e2e8f0; }
 
-/* UTILITY MENU GRID (5 ITEMS INCLUDING SETTINGS) */
-.utility-grid-5 {
+.utility-grid-4 {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 6px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
     width: 100%;
 }
 
 .utility-card-tile {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 14px;
-    padding: 10px 2px;
+    background: linear-gradient(155deg, rgba(17,21,49,.84), rgba(7,9,24,.92));
+    border: 1px solid rgba(165,180,252,.15);
+    border-radius: 16px;
+    padding: 12px 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    transition: transform .15s, background .15s;
+    transition: transform .15s;
     box-shadow: 0 6px 18px rgba(0,0,0,0.3);
 }
 
-.utility-card-tile:active { transform: scale(0.94); background: rgba(255,255,255,0.1); }
-.utility-card-tile span { font-size: 18px; }
-.utility-card-tile label { font-size: 8px; font-weight: 800; color: #cbd5e1; }
+.utility-card-tile:active { transform: scale(0.94); }
+.utility-card-tile span { font-size: 20px; }
+.utility-card-tile label { font-size: 9px; font-weight: 800; color: #cbd5e1; }
 
-/* SETTINGS CONTROLS */
 .settings-group {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 18px;
-    padding: 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 20px;
     margin-bottom: 16px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 18px;
 }
 
 .setting-row {
@@ -309,9 +346,10 @@ button:focus-visible {
 }
 
 .setting-row input[type="range"] {
-    width: 140px;
+    width: 100%;
     accent-color: #a855f7;
     cursor: pointer;
+    margin-top: 8px;
 }
 
 .toggle-switch {
@@ -347,7 +385,6 @@ button:focus-visible {
 input:checked + .slider { background: var(--primary-gradient); }
 input:checked + .slider:before { transform: translateX(22px); }
 
-/* GENERAL BUTTON STYLES FOR OTHER SCREENS */
 .button {
     display: flex;
     align-items: center;
@@ -359,15 +396,14 @@ input:checked + .slider:before { transform: translateX(22px); }
     border-radius: 14px;
     font-size: 12px;
     font-weight: 800;
-    letter-spacing: .5px;
-    transition: transform .12s cubic-bezier(0.3, 1.5, 0.5, 1), filter .12s, box-shadow .12s;
+    transition: transform .12s;
     box-shadow: 0 8px 25px rgba(0,0,0,0.4);
     border: 1px solid rgba(255,255,255,0.12);
 }
 
-.button:active { transform: scale(.96); filter: brightness(1.2); }
+.button:active { transform: scale(.96); }
 .primary { background: var(--primary-gradient); font-size: 14px; }
-.secondary { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); }
+.secondary { background: rgba(255, 255, 255, 0.05); }
 
 .topbar {
     display: flex;
@@ -375,6 +411,7 @@ input:checked + .slider:before { transform: translateX(22px); }
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 22px;
+    padding-right: 50px;
 }
 
 .back {
@@ -396,26 +433,10 @@ input:checked + .slider:before { transform: translateX(22px); }
     font-weight: 900;
 }
 
-.heading {
-    font-size: 24px;
-    font-weight: 900;
-    letter-spacing: -.5px;
-}
+.heading { font-size: 24px; font-weight: 900; }
+.subheading { color: var(--muted); font-size: 12px; margin-top: 6px; margin-bottom: 18px; }
 
-.subheading {
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.6;
-    margin-top: 6px;
-    margin-bottom: 18px;
-}
-
-.level-grid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0,1fr));
-    gap: 10px;
-    padding-bottom: 24px;
-}
+.level-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 10px; padding-bottom: 24px; }
 
 .level {
     aspect-ratio: 1;
@@ -428,44 +449,15 @@ input:checked + .slider:before { transform: translateX(22px); }
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 2px;
 }
 
-.level.unlocked {
-    background: linear-gradient(135deg, #3730a3, #7c3aed);
-    border-color: rgba(167,139,250,0.6);
-    box-shadow: 0 4px 15px rgba(124,58,237,0.3);
-}
-
-.level.completed {
-    background: linear-gradient(135deg, #065f46, #059669);
-    border-color: #34d399;
-}
-
+.level.unlocked { background: linear-gradient(135deg, #3730a3, #7c3aed); border-color: rgba(167,139,250,0.6); }
+.level.completed { background: linear-gradient(135deg, #065f46, #059669); border-color: #34d399; }
 .level:disabled { opacity: .25; cursor: not-allowed; }
 
-.shop-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    gap: 12px;
-    padding-bottom: 24px;
-}
-
-.shop-card {
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.03);
-    border-radius: 18px;
-    padding: 12px;
-}
-
-.preview {
-    width: 100%;
-    aspect-ratio: 1.4;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    border: 1px solid rgba(255,255,255,0.15);
-}
-
+.shop-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; padding-bottom: 24px; }
+.shop-card { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); border-radius: 18px; padding: 12px; }
+.preview { width: 100%; aspect-ratio: 1.4; border-radius: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.15); }
 .shop-name { font-size: 12px; font-weight: 800; margin-bottom: 4px; }
 .shop-desc { color: var(--muted); font-size: 10px; margin-bottom: 12px; }
 
@@ -482,24 +474,11 @@ input:checked + .slider:before { transform: translateX(22px); }
 .shop-buy.owned { background: #064e3b; border: 1px solid rgba(16,185,129,0.5); }
 .shop-buy:disabled { opacity: .4; cursor: not-allowed; }
 
-.section-label {
-    color: #38bdf8;
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 2px;
-    margin: 14px 0 10px;
-    text-transform: uppercase;
-}
+.section-label { color: #38bdf8; font-size: 10px; font-weight: 900; letter-spacing: 2px; margin: 14px 0 10px; text-transform: uppercase; }
 
-#hud {
-    display: none;
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    pointer-events: none;
-}
-
+#hud { display: none; position: absolute; inset: 0; z-index: 5; pointer-events: none; }
 #hud > * { pointer-events: auto; }
+#app:not(.home-screen) .top-right-settings-btn { display: none; }
 
 .hud-top {
     position: absolute;
@@ -509,167 +488,100 @@ input:checked + .slider:before { transform: translateX(22px); }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 7px;
 }
 
 .hud-card {
-    background: rgba(10, 13, 36, 0.88);
-    border: 1px solid rgba(255,255,255,0.12);
+    flex: 1 1 0;
+    min-width: 0;
+    background: linear-gradient(145deg, rgba(16,20,49,.94), rgba(6,8,24,.92));
+    border: 1px solid rgba(125,211,252,0.2);
     border-radius: 14px;
-    padding: 8px 12px;
+    padding: 8px 10px;
     backdrop-filter: blur(12px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,.06);
 }
 
-.hud-label {
-    color: #94a3b8;
-    font-size: 9px;
-    font-weight: 800;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-}
-
-.hud-number { font-size: 16px; font-weight: 900; color: #38bdf8; margin-top: 2px; }
+.hud-label { color: #94a3b8; font-size: 8px; font-weight: 900; letter-spacing: .9px; text-transform: uppercase; white-space: nowrap; }
+.hud-number { font-size: 16px; font-weight: 900; color: #67e8f9; margin-top: 2px; white-space: nowrap; }
 
 .hud-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 13px;
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.12);
-    font-size: 18px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    width: 42px; height: 42px; border-radius: 13px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+    font-size: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 .fever-bar-wrap {
     position: absolute;
-    top: 74px;
-    left: 14px;
-    right: 14px;
-    height: 7px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.12);
+    top: 72px; left: 14px; right: 14px;
+    height: 7px; background: rgba(255,255,255,0.08);
+    border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12);
 }
 
 .fever-bar-fill {
-    height: 100%;
-    width: 0%;
+    height: 100%; width: 0%;
     background: linear-gradient(90deg, #f59e0b, #ef4444, #ec4899);
-    border-radius: inherit;
     transition: width 0.1s linear;
 }
 
 .combo-banner {
     position: absolute;
-    top: 22%;
-    left: 50%;
-    transform: translateX(-50%) scale(.6);
-    font-size: 26px;
-    font-weight: 900;
-    font-style: italic;
-    white-space: nowrap;
-    color: #fde68a;
-    text-shadow: 0 0 25px #f59e0b, 0 4px 6px #000;
-    opacity: 0;
-    transition: opacity .12s, transform .15s;
+    top: 22%; left: 50%;
+    transform: translateX(-50%) scale(.5);
+    font-size: 34px; font-weight: 900; font-style: italic;
+    white-space: nowrap; color: #fde68a;
+    text-shadow: 0 0 30px #f59e0b, 0 4px 8px #000;
+    opacity: 0; transition: opacity .15s, transform .2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     pointer-events: none;
 }
 
-.combo-banner.show { opacity: 1; transform: translateX(-50%) scale(1); }
+.combo-banner.show { opacity: 1; transform: translateX(-50%) scale(1.1); }
 
 #hud-bottom {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    position: absolute; left: 50%; transform: translateX(-50%);
     bottom: max(18px, env(safe-area-inset-bottom));
     width: calc(100% - 28px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
 }
 
 .objective {
-    background: rgba(10, 13, 36, 0.9);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 12px;
-    padding: 8px 14px;
-    font-size: 10px;
-    font-weight: 800;
-    color: #e2e8f0;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    background: rgba(10, 13, 36, 0.9); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px; padding: 8px 14px; font-size: 10px; font-weight: 800;
+    color: #e2e8f0; text-transform: uppercase; backdrop-filter: blur(12px);
 }
 
 .boosters {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border-radius: 22px;
-    border: 1px solid rgba(255,255,255,0.15);
-    background: rgba(10, 13, 36, 0.92);
-    backdrop-filter: blur(16px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: flex; justify-content: center; gap: 12px; padding: 10px 16px;
+    border-radius: 22px; border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(10, 13, 36, 0.92); backdrop-filter: blur(16px);
 }
 
 .booster {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    position: relative;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.12);
-    font-size: 22px;
-    transition: transform .1s;
+    width: 48px; height: 48px; border-radius: 14px; position: relative;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); font-size: 22px;
 }
 
 .booster:active { transform: scale(0.92); }
 
 .booster-count {
-    position: absolute;
-    right: -5px;
-    top: -5px;
-    border-radius: 15px;
-    min-width: 18px;
-    height: 18px;
-    display: grid;
-    place-items: center;
-    padding: 0 4px;
-    background: #ef4444;
-    color: white;
-    font-size: 9px;
-    font-weight: 900;
-    box-shadow: 0 2px 8px rgba(239,68,68,0.5);
+    position: absolute; right: -5px; top: -5px; border-radius: 15px;
+    min-width: 18px; height: 18px; display: grid; place-items: center;
+    padding: 0 4px; background: #ef4444; color: white; font-size: 9px; font-weight: 900;
 }
 
 .overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 30;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: rgba(2, 3, 10, 0.85);
-    backdrop-filter: blur(14px);
+    position: absolute; inset: 0; z-index: 30; display: none;
+    align-items: center; justify-content: center; padding: 20px;
+    background: rgba(2, 3, 10, 0.85); backdrop-filter: blur(14px);
 }
 
 .overlay.active { display: flex; animation: screenIn .2s ease; }
 
 .dialog {
-    width: 100%;
-    max-width: 340px;
-    border-radius: 24px;
+    width: 100%; max-width: 340px; border-radius: 24px;
     border: 1px solid rgba(255,255,255,0.18);
     background: linear-gradient(145deg, #16193b, #090b1f);
-    padding: 28px 22px;
-    text-align: center;
-    box-shadow: 0 25px 70px rgba(0,0,0,0.85);
+    padding: 28px 22px; text-align: center; box-shadow: 0 25px 70px rgba(0,0,0,0.85);
 }
 
 .dialog-icon { font-size: 46px; margin-bottom: 12px; }
@@ -677,64 +589,119 @@ input:checked + .slider:before { transform: translateX(22px); }
 .dialog p { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 10px 0 20px; }
 .dialog-actions { display: grid; gap: 10px; }
 
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2,1fr);
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.stat-card {
-    padding: 18px 12px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px;
-    text-align: center;
-}
-
+.stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 20px; }
+.stat-card { padding: 18px 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; text-align: center; }
 .stat-value { font-size: 24px; font-weight: 900; color: #38bdf8; }
-.stat-label { margin-top: 6px; font-size: 9px; color: var(--muted); font-weight: 800; letter-spacing: 1px; }
+.stat-label { margin-top: 6px; font-size: 9px; color: var(--muted); font-weight: 800; }
 
 .toast {
-    position: absolute;
-    z-index: 50;
-    top: 42%;
-    left: 50%;
-    transform: translate(-50%, 15px);
-    opacity: 0;
-    pointer-events: none;
-    background: rgba(18, 22, 54, 0.95);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 14px;
-    padding: 12px 18px;
-    font-size: 12px;
-    font-weight: 800;
-    text-align: center;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.6);
-    transition: .18s;
+    position: absolute; z-index: 50; top: 42%; left: 50%; transform: translate(-50%, 15px);
+    opacity: 0; pointer-events: none; background: rgba(18, 22, 54, 0.95);
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 14px; padding: 12px 18px;
+    font-size: 12px; font-weight: 800; text-align: center; transition: .18s;
 }
 
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
-.mission {
-    padding: 14px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: rgba(255,255,255,0.03);
-    border-radius: 16px;
-    margin-bottom: 12px;
-}
-
+.mission { padding: 14px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); border-radius: 16px; margin-bottom: 12px; }
 .mission-row { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; font-weight: 800; }
 .mission-sub { color: var(--muted); font-size: 10px; margin-top: 5px; }
 .progress { height: 6px; background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; margin-top: 12px; }
-.progress > div { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #818cf8); border-radius: inherit; }
+.progress > div { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #818cf8); }
+
+
+/* RESPONSIVE POLISH */
+button { touch-action: manipulation; }
+button:focus-visible, input:focus-visible {
+    outline: 2px solid #67e8f9;
+    outline-offset: 3px;
+}
+.screen { overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(148,163,184,.45) transparent; }
+#hud-bottom { padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+@media (max-width: 360px) {
+    .screen { padding: 18px 14px; }
+    .game-title { font-size: clamp(42px, 13vw, 60px); }
+    .hud-top { left: 8px; right: 8px; gap: 5px; }
+    .hud-icon { flex: 0 0 36px; width: 36px; height: 38px; }
+    .hud-card { padding: 7px 6px; border-radius: 11px; }
+    .hud-label { font-size: 7px; letter-spacing: .4px; }
+    .hud-number { font-size: 13px; }
+    .booster { min-width: 48px; }
+}
+/* Premium arcade menu refinements */
+#screen-main {
+    padding: max(20px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+    background:
+      radial-gradient(ellipse at 50% -5%, rgba(56,189,248,.17), transparent 38%),
+      radial-gradient(ellipse at 100% 45%, rgba(168,85,247,.12), transparent 42%),
+      linear-gradient(180deg, rgba(5,7,22,.82), rgba(3,2,8,.98));
+}
+.game-hud-home { max-width: 390px; gap: 13px; }
+.brand-showcase {
+    border-color: rgba(125,211,252,.32);
+    background: linear-gradient(145deg, rgba(17,25,62,.96), rgba(7,10,29,.96) 62%, rgba(34,12,58,.94));
+}
+.game-title { letter-spacing: -2.6px; }
+.home-section-heading {
+    display: flex; align-items: center; gap: 10px;
+    color: #a5b4fc; font-size: 9px; font-weight: 900;
+    letter-spacing: 2px; padding: 1px 2px 0;
+}
+.home-section-heading i {
+    height: 1px; flex: 1;
+    background: linear-gradient(90deg, rgba(129,140,248,.5), transparent);
+}
+.utility-heading { margin-top: 1px; }
+.btn-campaign-main { min-height: 66px; }
+.mode-card-tile, .utility-card-tile {
+    position: relative; overflow: hidden;
+    border-color: rgba(148,163,255,.22);
+    transition: transform .16s ease, border-color .16s ease, filter .16s ease;
+}
+.mode-card-tile::before, .utility-card-tile::before {
+    content: ""; position: absolute; inset: 0 0 auto; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+}
+.mode-card-tile:active, .utility-card-tile:active { filter: brightness(1.2); }
+.top-right-settings-btn { border-color: rgba(125,211,252,.28); }
+@media (max-height: 760px) {
+    .brand-showcase { padding-top: 22px; padding-bottom: 17px; }
+    .game-hud-home { gap: 10px; }
+    .mode-card-tile { padding-top: 11px; padding-bottom: 11px; }
+    .utility-card-tile { padding-top: 9px; padding-bottom: 9px; }
+}
+
+@media (max-height: 650px) {
+    .screen { padding-top: 12px; padding-bottom: 12px; }
+    .brand-showcase { margin-bottom: 12px; }
+    .game-title { font-size: clamp(38px, 8vh, 54px); line-height: .9; }
+    .game-subtitle { margin-top: 4px; }
+    .btn-campaign-main { min-height: 66px; }
+    .modes-grid-3 { gap: 8px; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+    #app { max-width: 860px; max-height: none; }
+    .screen { padding: 12px 18px; }
+    .game-hud-home { max-width: 650px; margin: 0 auto; }
+    .brand-showcase { margin-bottom: 8px; }
+    .game-title { font-size: 38px; }
+    .creator-tag { margin-top: 4px; }
+    .player-wallet-row { margin-top: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+}
+
 </style>
 </head>
 
 <body>
-<div id="app">
+<div id="app" class="home-screen">
     <div class="ambient"></div>
     <canvas id="gameCanvas"></canvas>
+
+    <!-- TOP-RIGHT GEAR SETTINGS BUTTON -->
+    <button class="top-right-settings-btn" onclick="openSettings()" aria-label="Settings">⚙️</button>
 
     <!-- MAIN MENU DASHBOARD -->
     <section id="screen-main" class="screen active">
@@ -743,12 +710,12 @@ input:checked + .slider:before { transform: translateX(22px); }
                 <div style="font-size:9px;font-weight:900;letter-spacing:3px;color:#38bdf8;text-transform:uppercase;">✦ ARCADE EVOLUTION ✦</div>
                 <h1 class="game-title">BUBBLE<br>SURGE</h1>
                 <p class="game-subtitle">COSMIC EDITION</p>
+                <div class="creator-tag">Created by Ayan Ur Rehman</div>
                 <div class="player-wallet-row">
                     <div class="currency-badge">🪙 <span id="menuCoins">300</span></div>
                 </div>
             </div>
 
-            <!-- Campaign Play CTA -->
             <button class="btn-campaign-main" onclick="openCampaign()">
                 <div class="campaign-text-group">
                     <span class="campaign-title-text">CAMPAIGN MODE</span>
@@ -757,7 +724,7 @@ input:checked + .slider:before { transform: translateX(22px); }
                 <div class="campaign-icon-box">🗺️</div>
             </button>
 
-            <!-- Game Modes Grid -->
+            <div class="home-section-heading"><span>CHOOSE YOUR MODE</span><i></i></div>
             <div class="modes-grid-3">
                 <button class="mode-card-tile" onclick="startArcade()">
                     <span>♾️</span>
@@ -773,8 +740,8 @@ input:checked + .slider:before { transform: translateX(22px); }
                 </button>
             </div>
 
-            <!-- Utility Hub Grid (5 Items with Settings) -->
-            <div class="utility-grid-5">
+            <div class="home-section-heading utility-heading"><span>YOUR ARCADE</span><i></i></div>
+            <div class="utility-grid-4">
                 <button class="utility-card-tile" onclick="openShop()">
                     <span>🛍️</span>
                     <label>Shop</label>
@@ -790,10 +757,6 @@ input:checked + .slider:before { transform: translateX(22px); }
                 <button class="utility-card-tile" onclick="openStats()">
                     <span>🏆</span>
                     <label>Career</label>
-                </button>
-                <button class="utility-card-tile" onclick="openSettings()">
-                    <span>⚙️</span>
-                    <label>Settings</label>
                 </button>
             </div>
         </div>
@@ -823,12 +786,12 @@ input:checked + .slider:before { transform: translateX(22px); }
                     <span class="slider"></span>
                 </label>
             </div>
-            <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-                <div style="display: flex; justify-content: space-width; width: 100%; justify-content: space-between;">
+            <div class="setting-row" style="flex-direction: column; align-items: flex-start;">
+                <div style="display: flex; justify-content: space-between; width: 100%;">
                     <span>Master Volume</span>
                     <span id="volLabel" style="color: #38bdf8;">80%</span>
                 </div>
-                <input type="range" id="volSlider" min="0" max="100" value="80" oninput="updateVolume(this.value)" style="width: 100%;">
+                <input type="range" id="volSlider" min="0" max="100" value="80" oninput="updateVolume(this.value)">
             </div>
         </div>
         <button class="button primary" onclick="showScreen('screen-main')">SAVE & BACK</button>
@@ -906,12 +869,16 @@ input:checked + .slider:before { transform: translateX(22px); }
         <div class="hud-top">
             <button class="hud-icon" onclick="pauseGame()" aria-label="Pause">Ⅱ</button>
             <div class="hud-card">
-                <div class="hud-label" id="modeLabel">ARCADE</div>
+                <div class="hud-label">SCORE</div>
                 <div class="hud-number" id="hud-score">0</div>
             </div>
-            <div class="hud-card" style="text-align:right">
-                <div class="hud-label" id="targetLabel">BEST</div>
+            <div class="hud-card" style="text-align:center">
+                <div class="hud-label" id="targetLabel">TARGET</div>
                 <div class="hud-number" id="hud-target">0</div>
+            </div>
+            <div class="hud-card" style="text-align:right">
+                <div class="hud-label" id="movesLabel">MOVES</div>
+                <div class="hud-number" id="hud-moves">—</div>
             </div>
         </div>
 
@@ -919,7 +886,7 @@ input:checked + .slider:before { transform: translateX(22px); }
             <div id="feverFill" class="fever-bar-fill"></div>
         </div>
 
-        <div id="comboBanner" class="combo-banner">SUPER COMBO!</div>
+        <div id="comboBanner" class="combo-banner">GOOD!</div>
 
         <div id="hud-bottom">
             <div class="objective" id="objective">Tap bubbles to pop!</div>
@@ -957,7 +924,7 @@ const $ = id => document.getElementById(id);
 const canvas = $("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-const SAVE_KEY = "bubbleSurge_Ultimate_v13";
+const SAVE_KEY = "bubbleSurge_Ultimate_v16";
 
 const backgrounds = [
     { id:"nebula", name:"Cosmic Nebula", price:0, colors:["#1e1b4b","#09081d","#030208"], accent:"#38bdf8" },
@@ -983,39 +950,74 @@ const boosterItems = [
 ];
 
 function loadSave() {
+    const defaults = {
+        coins: 300, unlocked: 1, stars: {},
+        inventory: { bomb: 3, freeze: 3, zap: 3 },
+        ownedBG: ["nebula"], ownedSkin: ["classic"],
+        activeBG: "nebula", activeSkin: "classic",
+        best: 0, totalPops: 0, totalLevels: 0, bestCombo: 0,
+        lastDaily: "", missionDay: "", missions: {},
+        settings: { bgm: true, sfx: true, volume: 0.8 }
+    };
     try {
-        const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "{}");
+        const raw = localStorage.getItem(SAVE_KEY);
+        const s = raw ? JSON.parse(raw) : {};
+        if (!s || typeof s !== "object" || Array.isArray(s)) return defaults;
+        const safeNumber = (v, fallback, min = 0, max = 1e9) =>
+            Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : fallback;
+        const safeStringArray = (v, fallback, allowed) =>
+            Array.isArray(v) ? [...new Set(v.filter(x => typeof x === "string" && allowed.includes(x)))] : [...fallback];
+        const validStars = {};
+        if (s.stars && typeof s.stars === "object" && !Array.isArray(s.stars)) {
+            for (const [key, value] of Object.entries(s.stars)) {
+                const level = Number(key);
+                if (Number.isInteger(level) && level >= 1 && level <= 100 && Number.isFinite(value))
+                    validStars[level] = Math.max(0, Math.min(3, Math.floor(value)));
+            }
+        }
+        const inventory = {};
+        for (const id of ["bomb", "freeze", "zap"])
+            inventory[id] = safeNumber(s.inventory?.[id], defaults.inventory[id], 0, 999);
+        const validMissions = {};
+        if (s.missions && typeof s.missions === "object" && !Array.isArray(s.missions)) {
+            for (const [id, m] of Object.entries(s.missions)) {
+                if (m && typeof m === "object") validMissions[id] = {
+                    ...m,
+                    label: typeof m.label === "string" ? m.label : "Mission",
+                    value: safeNumber(m.value, 0, 0, 1e6),
+                    target: safeNumber(m.target, 1, 1, 1e6),
+                    reward: safeNumber(m.reward, 0, 0, 1e6),
+                    claimed: m.claimed === true
+                };
+            }
+        }
+        const settings = s.settings && typeof s.settings === "object" ? s.settings : {};
         return {
-            coins: Number.isFinite(s.coins) ? s.coins : 300,
-            unlocked: s.unlocked || 1,
-            stars: s.stars || {},
-            inventory: Object.assign({bomb:3,freeze:3,zap:3}, s.inventory || {}),
-            ownedBG: s.ownedBG || ["nebula"],
-            ownedSkin: s.ownedSkin || ["classic"],
-            activeBG: s.activeBG || "nebula",
-            activeSkin: s.activeSkin || "classic",
-            best: s.best || 0,
-            totalPops: s.totalPops || 0,
-            totalLevels: s.totalLevels || 0,
-            bestCombo: s.bestCombo || 0,
-            lastDaily: s.lastDaily || "",
-            missionDay: s.missionDay || "",
-            missions: s.missions || {},
-            settings: Object.assign({ bgm: true, sfx: true, volume: 0.8 }, s.settings || {})
+            coins: safeNumber(s.coins, defaults.coins),
+            unlocked: safeNumber(s.unlocked, 1, 1, 100),
+            stars: validStars,
+            inventory,
+            ownedBG: safeStringArray(s.ownedBG, defaults.ownedBG, backgrounds.map(x => x.id)),
+            ownedSkin: safeStringArray(s.ownedSkin, defaults.ownedSkin, skins.map(x => x.id)),
+            activeBG: backgrounds.some(x => x.id === s.activeBG) && (s.ownedBG || []).includes(s.activeBG) ? s.activeBG : "nebula",
+            activeSkin: skins.some(x => x.id === s.activeSkin) && (s.ownedSkin || []).includes(s.activeSkin) ? s.activeSkin : "classic",
+            best: safeNumber(s.best, 0),
+            totalPops: safeNumber(s.totalPops, 0),
+            totalLevels: safeNumber(s.totalLevels, 0),
+            bestCombo: safeNumber(s.bestCombo, 0),
+            lastDaily: typeof s.lastDaily === "string" ? s.lastDaily : "",
+            missionDay: typeof s.missionDay === "string" ? s.missionDay : "",
+            missions: validMissions,
+            settings: {
+                bgm: settings.bgm !== false,
+                sfx: settings.sfx !== false,
+                volume: safeNumber(settings.volume, 0.8, 0, 1)
+            }
         };
     } catch {
-        return {
-            coins:300, unlocked:1, stars:{},
-            inventory:{bomb:3,freeze:3,zap:3},
-            ownedBG:["nebula"], ownedSkin:["classic"],
-            activeBG:"nebula", activeSkin:"classic",
-            best:0, totalPops:0, totalLevels:0, bestCombo:0,
-            lastDaily:"", missionDay:"", missions:{},
-            settings: { bgm: true, sfx: true, volume: 0.8 }
-        };
+        return defaults;
     }
 }
-
 let save = loadSave();
 function persist() {
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch {}
@@ -1033,6 +1035,7 @@ let gameMode = "arcade";
 let currentLevel = 1;
 let score = 0;
 let movesLeft = 0;
+let layerNumber = 1;
 let targetScore = 0;
 let freezeTime = 0;
 let blitzTime = 60;
@@ -1046,118 +1049,149 @@ let animationId = 0;
 let lastFrame = 0;
 let toastTimer = 0;
 let comboTimer = 0;
+let waveTimer = 0;
+let wavePending = false;
+let audioContext = null;
+let preferredVoice = null;
+let fallbackMusicNodes = [];
+let fallbackMusicTimer = 0;
+let fallbackMusicStep = 0;
+let fallbackMusicActive = false;
 
-/* AUDIO & SYNTHESIZER SYSTEM WITH RELAXING BGM */
-let audioCtx = null;
-let bgmOsc1 = null, bgmOsc2 = null, bgmGain = null;
-let bgmInterval = null;
+/* BACKGROUND MUSIC: online soundtrack with a built-in fallback if the URL cannot load */
+let bgmAudio = new Audio("https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3");
+bgmAudio.loop = true;
+bgmAudio.preload = "auto";
+bgmAudio.addEventListener("error", () => {
+    if (save.settings.bgm && !document.hidden) startFallbackMusic();
+});
 
-function initAudio() {
+function startFallbackMusic() {
+    if (!save.settings.bgm || document.hidden) return;
     try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === "suspended") audioCtx.resume();
-        startAmbientBGM();
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        if (!audioContext) audioContext = new AudioContextClass();
+        if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+        if (fallbackMusicActive) return;
+        fallbackMusicActive = true;
+        const notes = [130.81, 164.81, 196.00, 246.94, 196.00, 164.81, 146.83, 174.61];
+        const playNote = () => {
+            if (!fallbackMusicActive || !save.settings.bgm || document.hidden || !audioContext) return;
+            const now = audioContext.currentTime;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(notes[fallbackMusicStep % notes.length], now);
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, save.settings.volume * 0.035), now + 0.18);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.45);
+            osc.connect(gain); gain.connect(audioContext.destination);
+            osc.start(now); osc.stop(now + 1.5);
+            osc.onended = () => { try { osc.disconnect(); gain.disconnect(); } catch {} };
+            fallbackMusicStep++;
+        };
+        playNote();
+        fallbackMusicTimer = window.setInterval(playNote, 720);
     } catch {}
 }
 
-function startAmbientBGM() {
-    if (bgmInterval || !save.settings.bgm) return;
-    try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        bgmGain = audioCtx.createGain();
-        bgmGain.gain.setValueAtTime(save.settings.volume * 0.04, audioCtx.currentTime);
-        bgmGain.connect(audioCtx.destination);
+function stopFallbackMusic() {
+    fallbackMusicActive = false;
+    if (fallbackMusicTimer) clearInterval(fallbackMusicTimer);
+    fallbackMusicTimer = 0;
+}
 
-        const chords = [
-            [220, 329.63, 440], // A minor
-            [174.61, 261.63, 349.23], // F major
-            [130.81, 196, 246.94], // C major
-            [164.81, 246.94, 329.63] // E minor
-        ];
-        let chordIdx = 0;
+function triggerScreenShake() {
+    const app = $("app");
+    app.classList.remove("shake");
+    void app.offsetWidth;
+    app.classList.add("shake");
+    setTimeout(() => app.classList.remove("shake"), 300);
+}
 
-        bgmInterval = setInterval(() => {
-            if (!save.settings.bgm || document.hidden || !audioCtx) return;
-            const now = audioCtx.currentTime;
-            const notes = chords[chordIdx];
-            chordIdx = (chordIdx + 1) % chords.length;
-
-            notes.forEach(freq => {
-                try {
-                    const osc = audioCtx.createOscillator();
-                    const g = audioCtx.createGain();
-                    osc.type = "sine";
-                    osc.frequency.setValueAtTime(freq, now);
-                    g.gain.setValueAtTime(0.001, now);
-                    g.gain.linearRampToValueAtTime(save.settings.volume * 0.025, now + 1.5);
-                    g.gain.exponentialRampToValueAtTime(0.0001, now + 5.5);
-                    osc.connect(g);
-                    g.connect(bgmGain);
-                    osc.start(now);
-                    osc.stop(now + 6);
-                } catch {}
-            });
-        }, 5500);
-    } catch {}
+function initAudio() {
+    bgmAudio.volume = Math.max(0, Math.min(1, save.settings.volume)) * 0.35;
+    if (!save.settings.bgm || document.hidden) {
+        stopAmbientBGM();
+        return;
+    }
+    if (bgmAudio.error) {
+        startFallbackMusic();
+        return;
+    }
+    const playPromise = bgmAudio.play();
+    if (playPromise && typeof playPromise.then === "function") {
+        playPromise.then(() => stopFallbackMusic()).catch(() => {
+            // Keep music audible even if the external track is blocked by the browser/network.
+            startFallbackMusic();
+        });
+    }
 }
 
 function stopAmbientBGM() {
-    if (bgmInterval) {
-        clearInterval(bgmInterval);
-        bgmInterval = null;
-    }
-    if (bgmGain && audioCtx) {
-        try { bgmGain.gain.setValueAtTime(0, audioCtx.currentTime); } catch {}
-    }
+    bgmAudio.pause();
+    stopFallbackMusic();
 }
 
-function playTone(freq=440, duration=.1, type="sine", vol=.05, slide=1) {
+function selectVoice() {
+    if (!('speechSynthesis' in window)) return;
+    const voices = window.speechSynthesis.getVoices();
+    const english = voices.filter(v => /^en([-_]|$)/i.test(v.lang));
+    // Prefer a natural-sounding English voice with a likely masculine voice name when available.
+    preferredVoice = english.find(v => /david|mark|guy|daniel|alex|fred|james|male|tom/i.test(v.name)) || english[0] || voices[0] || null;
+}
+if ('speechSynthesis' in window) {
+    selectVoice();
+    window.speechSynthesis.addEventListener?.('voiceschanged', selectVoice);
+}
+
+function playVoiceDrop(text) {
+    if (!save.settings.sfx || !('speechSynthesis' in window)) return;
     try {
-        if (!audioCtx || !save.settings.sfx) return;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        const now = audioCtx.currentTime;
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, now);
-        osc.frequency.exponentialRampToValueAtTime(Math.max(30, freq * slide), now + duration);
-        gain.gain.setValueAtTime(vol * save.settings.volume, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + duration + 0.02);
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(text);
+        if (preferredVoice) msg.voice = preferredVoice;
+        msg.lang = preferredVoice?.lang || 'en-US';
+        msg.rate = 0.96;
+        msg.pitch = 0.88;
+        msg.volume = Math.max(0, Math.min(1, save.settings.volume));
+        window.speechSynthesis.speak(msg);
     } catch {}
 }
 
-function playPopSound(cLevel) {
-    playTone(320 + Math.min(cLevel, 10) * 60, 0.12, "sine", 0.06, 1.8);
-    if (cLevel >= 3) {
-        setTimeout(() => playTone(650, 0.1, "triangle", 0.04, 1.4), 40);
-    }
-}
-
-/* SPEECH SYNTHESIS FOR COMBO VOICE */
-function speakCombo(text) {
+function playPopSound(level) {
     if (!save.settings.sfx) return;
     try {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 1.3;
-            utterance.pitch = 1.2;
-            utterance.volume = save.settings.volume;
-            window.speechSynthesis.speak(utterance);
-        }
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        if (!audioContext) audioContext = new AudioContextClass();
+        if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        const now = audioContext.currentTime;
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320 + Math.min(level, 8) * 70, now);
+        osc.frequency.exponentialRampToValueAtTime(120, now + 0.1);
+        gain.gain.setValueAtTime(save.settings.volume * 0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start(now);
+        osc.stop(now + 0.12);
+        osc.onended = () => { osc.disconnect(); gain.disconnect(); };
     } catch {}
 }
 
-/* PAGE VISIBILITY API FOR BACKGROUND APP HANDLING */
 document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         stopAmbientBGM();
+        if (animationId) cancelAnimationFrame(animationId);
+        animationId = 0;
+        lastFrame = 0;
     } else {
-        if (save.settings.bgm) startAmbientBGM();
+        if (save.settings.bgm) initAudio();
+        if (!animationId) animationId = requestAnimationFrame(frame);
     }
 });
 
@@ -1179,12 +1213,17 @@ resizeCanvas();
 function applyBackground() {
     const bg = backgrounds.find(x => x.id === save.activeBG) || backgrounds[0];
     $("app").style.background = `radial-gradient(circle at 50% 20%, ${bg.colors[0]}, ${bg.colors[1]} 55%, ${bg.colors[2]})`;
-    document.documentElement.style.setProperty("--accent", bg.accent);
 }
 
 function updateWallets() {
     $("menuCoins").textContent = save.coins;
     document.querySelectorAll(".coins").forEach(el => el.textContent = save.coins);
+    // Keep the HUD counts tied to the saved inventory everywhere in the game.
+    const boosterCounts = { bomb: "countBomb", freeze: "countFreeze", zap: "countZap" };
+    for (const [type, elementId] of Object.entries(boosterCounts)) {
+        const element = $(elementId);
+        if (element) element.textContent = Math.max(0, Math.floor(Number(save.inventory?.[type]) || 0));
+    }
 }
 
 function showToast(msg) {
@@ -1197,6 +1236,7 @@ function showToast(msg) {
 
 function showScreen(id) {
     stopGame();
+    $("app").classList.toggle("home-screen", id === "screen-main");
     document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
     $("hud").style.display = "none";
     $("dialogOverlay").classList.remove("active");
@@ -1208,6 +1248,20 @@ function openCampaign() { renderLevels(); showScreen("screen-levels"); }
 function openShop() { renderShop(); showScreen("screen-shop"); }
 function openMissions() { renderMissions(); showScreen("screen-missions"); }
 function openSettings() {
+    // Settings are available from the menu only; gameplay uses the dedicated pause control.
+    if (running && !gameEnded) {
+        paused = true;
+        showDialog("⚙️", "GAME PAUSED", "Your round is paused. Choose what you want to do.", [
+            { text: "RESUME", cls: "primary", fn: () => {
+                $("dialogOverlay").classList.remove("active");
+                paused = false;
+                if (save.settings.bgm) initAudio();
+            }},
+            { text: "REPLAY", cls: "secondary", fn: () => startGame(gameMode, currentLevel) },
+            { text: "MENU", cls: "secondary", fn: () => showScreen("screen-main") }
+        ]);
+        return;
+    }
     $("bgmToggle").checked = save.settings.bgm;
     $("sfxToggle").checked = save.settings.sfx;
     $("volSlider").value = Math.round(save.settings.volume * 100);
@@ -1223,14 +1277,9 @@ function openStats() {
 }
 
 function toggleBGM(el) {
-    save.settings.bgm = el.checked;
+    save.settings.bgm = Boolean(el.checked);
     persist();
-    if (save.settings.bgm) {
-        initAudio();
-        startAmbientBGM();
-    } else {
-        stopAmbientBGM();
-    }
+    if (save.settings.bgm) initAudio(); else stopAmbientBGM();
 }
 
 function toggleSFX(el) {
@@ -1239,12 +1288,11 @@ function toggleSFX(el) {
 }
 
 function updateVolume(val) {
-    save.settings.volume = val / 100;
-    $("volLabel").textContent = val + "%";
+    const volume = Math.max(0, Math.min(100, Number(val) || 0));
+    save.settings.volume = volume / 100;
+    $("volLabel").textContent = volume + "%";
+    bgmAudio.volume = save.settings.volume * 0.35;
     persist();
-    if (bgmGain && audioCtx) {
-        try { bgmGain.gain.setValueAtTime(save.settings.volume * 0.04, audioCtx.currentTime); } catch {}
-    }
 }
 
 /* BUBBLE CLASS */
@@ -1273,7 +1321,7 @@ class Bubble {
         this.x += this.vx * speed;
         this.y += this.vy * speed + Math.sin(this.phase) * 0.2 * speed;
 
-        const top = 100;
+        const top = 135;
         const bottom = H - 110;
 
         if (this.x - this.r < 10) { this.x = this.r + 10; this.vx *= -1; }
@@ -1340,23 +1388,55 @@ function spawnBoard(count = 16) {
     let attempts = 0;
     while (bubbles.length < count && attempts < count * 25) {
         attempts++;
-        const r = random(18, 26);
-        const x = random(r + 10, W - r - 10);
-        const y = random(115, H - 125);
+        const r = Math.min(random(18, 26), Math.max(12, W / 2 - 8));
+        const x = random(r + 6, Math.max(r + 7, W - r - 6));
+        const top = Math.min(115, Math.max(50, H * 0.18));
+        const bottom = Math.max(top + 20, H - Math.min(125, Math.max(65, H * 0.18)));
+        const y = random(Math.min(top, H - r - 4), Math.max(Math.min(top, H - r - 4) + 1, bottom));
         if (!bubbles.some(b => Math.hypot(b.x - x, b.y - y) < b.r + r + 8)) {
             bubbles.push(new Bubble(x, y, r));
         }
     }
 }
 
-function checkWaveReplenishment() {
-    if (bubbles.length <= 2 && running && !gameEnded) {
-        setTimeout(() => {
-            if (!running || gameEnded) return;
-            spawnBoard(gameMode === "campaign" ? levelConfig(currentLevel).bubbleCount : 16);
-            showToast("✨ NEW WAVE SURGE!");
-        }, 200);
+function addBubbleLayer(count) {
+    // Add a fresh layer without removing the last two bubbles from the board.
+    let attempts = 0;
+    const maxAttempts = count * 35;
+    while (count > 0 && attempts < maxAttempts) {
+        attempts++;
+        const r = Math.min(random(18, 26), Math.max(12, W / 2 - 8));
+        const x = random(r + 6, Math.max(r + 7, W - r - 6));
+        const top = Math.min(135, Math.max(65, H * 0.2));
+        const bottom = Math.max(top + 20, H - Math.min(125, Math.max(65, H * 0.18)));
+        const y = random(Math.min(top, H - r - 4), Math.max(Math.min(top, H - r - 4) + 1, bottom));
+        if (!bubbles.some(b => Math.hypot(b.x - x, b.y - y) < b.r + r + 8)) {
+            bubbles.push(new Bubble(x, y, r));
+            count--;
+        }
     }
+}
+
+function checkWaveReplenishment() {
+    // A new layer arrives when only two bubbles remain, so the board keeps moving.
+    if (bubbles.length > 2 || !running || gameEnded || wavePending) return;
+    wavePending = true;
+    clearTimeout(waveTimer);
+    waveTimer = setTimeout(() => {
+        wavePending = false;
+        if (!running || gameEnded || bubbles.length > 2) return;
+        if (gameMode === "campaign") {
+            checkCampaignOutcome();
+            if (!running || gameEnded) return;
+        }
+        layerNumber++;
+        const extra = gameMode === "campaign"
+            ? 6 + Math.min(6, Math.floor(currentLevel / 5))
+            : 8;
+        addBubbleLayer(extra);
+        updateHUD();
+        showToast("🌊 SURGE! NEW BUBBLES INCOMING!");
+    }, 450);
 }
 
 function burst(x, y, color, amount = 22) {
@@ -1382,28 +1462,33 @@ function floatingText(x, y, text, color = "#fff") {
     floatingTexts.push({ x, y, text, color, life: 1 });
 }
 
-function showComboText(n) {
+/* ENCOURAGEMENT COMBO ANNOUNCER DROPS */
+function showComboText(totalPopped) {
     const banner = $("comboBanner");
-    const words = ["NICE!", "GREAT COMBO!", "SUPER SURGE!", "MEGA CHAIN!", "UNSTOPPABLE!", "COSMIC FEVER!"];
-    const phrase = n < 2 ? "Pop!" : (words[Math.min(n - 1, words.length - 1)]);
-    banner.textContent = n < 2 ? "POP!" : (phrase + "  ×" + n);
+    let word = "";
+
+    if (totalPopped >= 6) {
+        word = "EXCELLENT! 🔥";
+        playVoiceDrop("Excellent");
+        triggerScreenShake();
+    } else if (totalPopped >= 4) {
+        word = "AMAZING! ⚡";
+        playVoiceDrop("Amazing");
+    } else if (totalPopped >= 2) {
+        word = "GOOD! ✨";
+        playVoiceDrop("Good");
+    }
+
+    if (!word) return;
+
+    banner.textContent = word;
     banner.classList.add("show");
     clearTimeout(comboTimer);
-    comboTimer = setTimeout(() => banner.classList.remove("show"), 700);
-
-    if (n >= 2) {
-        speakCombo(phrase);
-    }
-}
-
-/* MISSIONS SYSTEM */
-function currentDayStr() {
-    const d = new Date();
-    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+    comboTimer = setTimeout(() => banner.classList.remove("show"), 800);
 }
 
 function ensureMissions() {
-    const day = currentDayStr();
+    const day = new Date().toDateString();
     if (save.missionDay !== day) {
         save.missionDay = day;
         save.missions = {
@@ -1442,8 +1527,8 @@ function triggerFever() {
     feverActive = true;
     feverTimer = 6000;
     showToast("🔥 FEVER SURGE ACTIVATED (3x Score)!");
-    playTone(880, 0.3, "triangle", 0.08, 1.5);
-    speakCombo("Fever Surge!");
+    playVoiceDrop("Fever Surge Activated");
+    triggerScreenShake();
 }
 
 function popBubble(bubble, level = 1) {
@@ -1471,17 +1556,22 @@ function popBubble(bubble, level = 1) {
     updateWallets();
     persist();
 
-    if (level >= 2) showComboText(level);
-
     let radius = bubble.r * 2.8;
-    if (bubble.special === "bomb") radius *= 1.8;
+    if (bubble.special === "bomb") {
+        radius *= 1.8;
+        triggerScreenShake();
+    }
 
     const neighbors = bubbles.filter(other => Math.hypot(other.x - bubble.x, other.y - bubble.y) < radius + other.r).slice(0, 8);
     let extraPops = 0;
     for (const n of neighbors) {
         if (!n.dead && bubbles.includes(n)) extraPops += popBubble(n, level + 1);
     }
-    return 1 + extraPops;
+
+    const totalPopped = 1 + extraPops;
+    showComboText(totalPopped);
+    checkWaveReplenishment();
+    return totalPopped;
 }
 
 function handleTap(x, y) {
@@ -1508,7 +1598,7 @@ function handleTap(x, y) {
     if (gameMode === "campaign") {
         movesLeft--;
         updateHUD();
-        setTimeout(checkCampaignOutcome, 200);
+        checkCampaignOutcome();
     }
 
     checkWaveReplenishment();
@@ -1521,7 +1611,13 @@ canvas.addEventListener("pointerdown", e => {
 
 /* ANIMATION LOOP */
 function frame(now) {
+    if (document.hidden) {
+        animationId = 0;
+        return;
+    }
     animationId = requestAnimationFrame(frame);
+    // Keep menu rendering lighter while preserving full-speed gameplay.
+    if (!running && lastFrame && now - lastFrame < 33) return;
     const dt = Math.min(40, now - (lastFrame || now));
     lastFrame = now;
 
@@ -1553,7 +1649,7 @@ function frame(now) {
             $("hud-target").textContent = Math.ceil(blitzTime) + "s";
             if (blitzTime <= 0) endBlitzGame();
         }
-        bubbles.forEach(b => b.update(dt));
+        bubbles.forEach(b => b.update(freezeTime > 0 ? 0 : dt));
     }
 
     $("feverFill").style.width = feverMeter + "%";
@@ -1606,9 +1702,8 @@ function frame(now) {
         ctx.restore();
     }
 }
-animationId = requestAnimationFrame(frame);
+if (!document.hidden) animationId = requestAnimationFrame(frame);
 
-/* DYNAMIC LEVEL CONFIGURATION */
 function levelConfig(lvl) {
     return {
         target: 300 + lvl * 180,
@@ -1621,9 +1716,13 @@ function stopGame() {
     running = false;
     paused = false;
     gameEnded = true;
+    wavePending = false;
+    clearTimeout(waveTimer);
 }
 
 function startGame(mode, lvl = 1) {
+    clearTimeout(waveTimer);
+    wavePending = false;
     initAudio();
     gameMode = mode;
     currentLevel = lvl;
@@ -1637,6 +1736,7 @@ function startGame(mode, lvl = 1) {
     paused = false;
     running = true;
 
+    layerNumber = 1;
     if (mode === "campaign") {
         const cfg = levelConfig(lvl);
         movesLeft = cfg.moves;
@@ -1646,11 +1746,12 @@ function startGame(mode, lvl = 1) {
     }
 
     document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    $("app").classList.remove("home-screen");
     $("dialogOverlay").classList.remove("active");
     $("hud").style.display = "block";
 
-    $("modeLabel").textContent = mode === "campaign" ? "LEVEL " + lvl : mode.toUpperCase();
     $("targetLabel").textContent = mode === "campaign" ? "TARGET" : mode === "blitz" ? "TIME" : "BEST";
+    $("movesLabel").textContent = mode === "campaign" ? "MOVES" : mode === "blitz" ? "TIME LEFT" : "RUN";
     updateHUD();
     spawnBoard(mode === "campaign" ? levelConfig(lvl).bubbleCount : 16);
     updateWallets();
@@ -1667,9 +1768,10 @@ function startCampaignLevel(lvl) {
 
 function updateHUD() {
     $("hud-score").textContent = score;
+    $("hud-moves").textContent = gameMode === "campaign" ? movesLeft : (gameMode === "blitz" ? Math.ceil(blitzTime) + "s" : "∞");
     if (gameMode === "campaign") {
         $("hud-target").textContent = targetScore;
-        $("objective").textContent = `TARGET: ${targetScore} PTS  •  MOVES LEFT: ${movesLeft}`;
+        $("objective").textContent = `TARGET: ${targetScore} PTS  •  CLEAR LAYERS TO BUILD YOUR COMBO`;
     } else if (gameMode === "blitz") {
         $("hud-target").textContent = Math.ceil(blitzTime) + "s";
         $("objective").textContent = "POP AS MANY BUBBLES AS YOU CAN!";
@@ -1688,8 +1790,15 @@ function checkCampaignOutcome() {
     if (score >= targetScore) {
         gameEnded = true;
         running = false;
-        playTone(523, 0.2, "triangle", 0.08, 1.2);
-        setTimeout(() => playTone(784, 0.3, "triangle", 0.08, 1.2), 150);
+        const celebrationLines = [
+            "Excellent! Level complete!",
+            "Amazing! Great job!",
+            "Fantastic! Well done!",
+            "Outstanding! You did it!",
+            "Brilliant! Level cleared!",
+            "Superb! Keep it up!"
+        ];
+        playVoiceDrop(celebrationLines[Math.floor(Math.random() * celebrationLines.length)]);
 
         const stars = score >= targetScore * 1.8 ? 3 : score >= targetScore * 1.3 ? 2 : 1;
         save.stars[currentLevel] = Math.max(save.stars[currentLevel] || 0, stars);
@@ -1710,6 +1819,7 @@ function checkCampaignOutcome() {
     } else if (movesLeft <= 0) {
         gameEnded = true;
         running = false;
+        playVoiceDrop("Game Over");
         showDialog("💫", "OUT OF MOVES", `Score: ${score} / ${targetScore}`, [
             { text: "TRY AGAIN", cls: "primary", fn: () => startCampaignLevel(currentLevel) },
             { text: "MAP", cls: "secondary", fn: openCampaign },
@@ -1749,14 +1859,17 @@ function showDialog(icon, title, text, actions) {
 function pauseGame() {
     if (!running || gameEnded) return;
     paused = true;
-    showDialog("Ⅱ", "PAUSED", "Game paused.", [
-        { text: "RESUME", cls: "primary", fn: () => { $("dialogOverlay").classList.remove("active"); paused = false; }},
-        { text: "RESTART", cls: "secondary", fn: () => startGame(gameMode, currentLevel) },
+    showDialog("Ⅱ", "GAME PAUSED", "Your round is paused. Choose what you want to do.", [
+        { text: "RESUME", cls: "primary", fn: () => {
+            $("dialogOverlay").classList.remove("active");
+            paused = false;
+            if (save.settings.bgm) initAudio();
+        }},
+        { text: "REPLAY", cls: "secondary", fn: () => startGame(gameMode, currentLevel) },
         { text: "MENU", cls: "secondary", fn: () => showScreen("screen-main") }
     ]);
 }
 
-/* BOOSTERS */
 function useBooster(type) {
     if (!running || paused || gameEnded) return;
     initAudio();
@@ -1775,19 +1888,28 @@ function useBooster(type) {
             bubbles.filter(b => Math.hypot(b.x - target.x, b.y - target.y) < 160).forEach(b => popBubble(b, 2));
             addShockwave(target.x, target.y, "#f472b6", 180);
             showToast("💣 MEGA BLAST!");
+            triggerScreenShake();
         }
     } else if (type === "zap") {
-        bubbles.slice(0, 5).forEach((b, i) => setTimeout(() => {
-            if (running && !gameEnded && bubbles.includes(b)) popBubble(b, 3);
-        }, i * 50));
+        // Capture the current targets, then check for a new wave after the final zap.
+        const targets = bubbles.slice(0, Math.min(5, bubbles.length));
+        targets.forEach((b, i) => setTimeout(() => {
+            if (running && !paused && !gameEnded && bubbles.includes(b)) popBubble(b, 3);
+            if (i === targets.length - 1) {
+                checkWaveReplenishment();
+                if (gameMode === "campaign") checkCampaignOutcome();
+            }
+        }, i * 70));
         showToast("⚡ VOLTAGE ZAP!");
     }
     updateWallets();
     persist();
-    checkWaveReplenishment();
+    if (type !== "zap") {
+        checkWaveReplenishment();
+        if (gameMode === "campaign" && (type === "bomb")) setTimeout(checkCampaignOutcome, 120);
+    }
 }
 
-/* RENDER CAMPAIGN LEVELS */
 function renderLevels() {
     const grid = $("levelGrid");
     grid.replaceChildren();
@@ -1803,7 +1925,6 @@ function renderLevels() {
     }
 }
 
-/* SHOP RENDER */
 function renderShop() {
     const bgGrid = $("backgroundShop");
     const skinGrid = $("skinShop");
@@ -1880,7 +2001,6 @@ function makeShopCard({ name, price, desc, preview, owned, equipped, onBuy }) {
     return card;
 }
 
-/* DAILY REWARD & MISSIONS */
 function claimDaily() {
     const today = new Date().toDateString();
     if (save.lastDaily === today) {
@@ -1935,11 +2055,8 @@ applyBackground();
 updateWallets();
 renderLevels();
 
-// Auto-start BGM on first user interaction if enabled
 window.addEventListener("pointerdown", () => {
-    if (save.settings.bgm && !bgmInterval) {
-        initAudio();
-    }
+    initAudio();
 }, { once: true });
 </script>
 </body>
